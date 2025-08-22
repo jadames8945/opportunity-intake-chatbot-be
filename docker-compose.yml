@@ -1,0 +1,104 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - "6390:6379"
+    networks:
+      - network-service
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  mongo:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27090:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - network-service
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./auth/Dockerfile
+    container_name: mcp-auth
+    restart: unless-stopped
+    volumes:
+      - ./.docker/.ipython:/root/.ipython:cached
+    ports:
+      - "8887:8946"
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: .
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+      ALLOWED_ORIGINS_REGISTRY: "origin_uris.txt"
+    depends_on:
+      - mongo
+    networks:
+      - network-service
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    container_name: paypal-backend
+    restart: unless-stopped
+    volumes:
+      - ./.docker/.ipython:/root/.ipython:cached
+    ports:
+      - "8888:8998"
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: .
+      REDIS_SERVER: redis://redis:6379
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+      ALLOWED_ORIGINS_REGISTRY: "origin_uris.txt"
+    depends_on:
+      - redis
+      - mongo
+    networks:
+      - network-service
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./worker/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./.docker/.ipython:/root/.ipython:cached
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: .
+      REDIS_SERVER: redis://redis:6379
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+    depends_on:
+      - redis
+      - mongo
+      - backend
+    networks:
+      - network-service
+
+networks:
+  network-service:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
