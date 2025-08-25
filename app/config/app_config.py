@@ -20,9 +20,7 @@ class AppConfig(BaseSettings):
 
         return [
             "http://localhost:3000",
-            "http://localhost:3001",
-            "http://localhost:3002",
-            "https://opportunity-intake-chatbot.coolify.dd-dpg.com",
+            "https://opportunity-intake-chatbot.coolify.dd-dpe.com",
         ]
 
 
