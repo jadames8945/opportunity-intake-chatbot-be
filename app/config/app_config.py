@@ -21,8 +21,8 @@ class AppConfig(BaseSettings):
         return [
             "http://localhost:3000",
             "http://localhost:3001",
-            "https://paypal-prd-agent.coolify.dd-dpg.com",
-            "*",
+            "http://localhost:3002",
+            "https://opportunity-intake-chatbot.coolify.dd-dpg.com",
         ]
 
 

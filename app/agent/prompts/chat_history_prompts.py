@@ -10,21 +10,21 @@ Guidelines:
 - Focus on WHAT is being built, not HOW it's being discussed
 
 Examples:
-- "PayPal Mobile Wallet Integration"
-- "Real-time Payment Processing System"
-- "Multi-currency Exchange API"
-- "Fraud Detection ML Pipeline"
-- "User Onboarding Flow Design"
-- "Subscription Billing Engine"
-- "Cross-border Payment Compliance"
-- "Merchant Dashboard Analytics"
-- "Webhook Event Handling"
-- "OAuth2 Authentication Flow"
-- "Mobile App Push Notifications"
-- "Payment Gateway Security"
-- "Customer Support Chatbot"
-- "Analytics Dashboard Widgets"
-- "API Rate Limiting Strategy"
+- "AI-Powered Opportunity Assessment"
+- "Enterprise Client Onboarding"
+- "Strategic Partnership Evaluation"
+- "Technology Platform Selection"
+- "Business Case Development"
+- "Stakeholder Alignment Strategy"
+- "Market Entry Analysis"
+- "Competitive Intelligence Review"
+- "Resource Planning Assessment"
+- "Risk Mitigation Planning"
+- "Success Metrics Definition"
+- "Implementation Roadmap Design"
+- "Client Relationship Management"
+- "Business Development Strategy"
+- "Opportunity Pipeline Analysis"
 """
 
 RESPONSE_FORMAT = """
@@ -39,3 +39,11 @@ Chat History:
 
 Generate a specific title for what is being built or discussed. Do NOT use words like 'chat', 'discussion', 'framework', 'generation', 'requirements' in the title.
 """
+
+EXAMPLE_CHAT_HISTORY_TITLES = [
+    "Opportunity Intake Discussion",
+    "Client Meeting Notes",
+    "Business Development Call",
+    "Proposal Planning Session",
+    "Stakeholder Alignment Meeting",
+]

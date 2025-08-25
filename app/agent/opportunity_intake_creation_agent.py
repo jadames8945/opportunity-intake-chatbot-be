@@ -6,7 +6,12 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from app.agent.prompts.opportunity_intake_prompts import OPPORTUNITY_ROLE, OPPORTUNITY_GOALS, OPPORTUNITY_STRUCTURE, RESPONSE_FORMAT
+from app.agent.prompts.opportunity_intake_creation_prompts import (
+    OPPORTUNITY_INTAKE_ROLE, 
+    OPPORTUNITY_INTAKE_CAPABILITIES, 
+    OPPORTUNITY_INTAKE_GUIDELINES, 
+    OPPORTUNITY_INTAKE_FORMAT
+)
 from app.config.conversation_store import ConversationStore
 from app.schemas.opportunity_response import OpportunityResponse
 from common.utils.llm_util import invoke_llm_with_string_prompt, validate_agent_response
@@ -24,13 +29,13 @@ class OpportunityIntakeCreationAgent:
                 (
                     "system",
                     f"""
-                    {OPPORTUNITY_ROLE}
+                    {OPPORTUNITY_INTAKE_ROLE}
 
-                    {OPPORTUNITY_GOALS}
+                    {OPPORTUNITY_INTAKE_CAPABILITIES}
                     
-                    {OPPORTUNITY_STRUCTURE}
+                    {OPPORTUNITY_INTAKE_GUIDELINES}
                    
-                    {RESPONSE_FORMAT}
+                    {OPPORTUNITY_INTAKE_FORMAT}
                     
                     Chat History:
                     {{chat_history}}

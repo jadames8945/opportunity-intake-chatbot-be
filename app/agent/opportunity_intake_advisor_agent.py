@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 
 from langchain_core.prompts import ChatPromptTemplate
 
-from app.agent.prompts.chat_prompts import (
+from app.agent.prompts.opportunity_intake_advisor_prompts import (
     CHAT_ROLE,
     CHAT_CAPABILITIES,
     CHAT_GUIDELINES,

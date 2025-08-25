@@ -59,8 +59,8 @@ def setup_routes(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="PayPal Agent Backend",
-        description="Backend API for PayPal Agent with PRD drafting capabilities",
+        title="Opportunity Intake Chatbot Backend",
+        description="Backend API for Opportunity Intake Chatbot with intelligent conversation and form generation capabilities",
         version="1.0.0",
         docs_url="/docs",
         redoc_url="/redoc",

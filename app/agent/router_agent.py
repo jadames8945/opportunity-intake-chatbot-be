@@ -59,12 +59,13 @@ class RouterAgent:
                     chat_history = "\n".join(
                         [f"{msg['role']}: {msg['content']}" for msg in recent_messages]
                     )
+
                     logger.info(
                         f"Router got {len(recent_messages)} messages for session {conversation_store.session_id}")
 
             agent = create_tool_calling_agent(
                 llm=ChatOpenAI(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1-mini",
                     temperature=0.1
                 ),
                 prompt=self.prompt,

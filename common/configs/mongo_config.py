@@ -32,7 +32,7 @@ class MongoConfig:
                 connectTimeoutMS=5000,
             )
 
-            self.db_connection = client["paypal_agent"]
+            self.db_connection = client["opportunity_intake"]
 
             logger.info("MongoDB client connected successfully.")
 

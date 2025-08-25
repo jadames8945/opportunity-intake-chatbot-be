@@ -32,12 +32,12 @@ services:
     build:
       context: .
       dockerfile: ./auth/Dockerfile
-    container_name: mcp-auth
+    container_name: opportunity-intake-chatbot-auth
     restart: unless-stopped
     volumes:
       - ./.docker/.ipython:/root/.ipython:cached
     ports:
-      - "8887:8946"
+      - "8887:8887"
     env_file:
       - .env
     environment:
@@ -54,17 +54,17 @@ services:
     build:
       context: .
       dockerfile: ./app/Dockerfile
-    container_name: paypal-backend
+    container_name: opportunity-intake-chatbot-backend
     restart: unless-stopped
     volumes:
       - ./.docker/.ipython:/root/.ipython:cached
     ports:
-      - "8888:8998"
+      - "8888:8888"
     env_file:
       - .env
     environment:
       PYTHONPATH: .
-      PORT: 8998
+      PORT: 8888
       REDIS_SERVER: redis://redis:6379
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -79,6 +79,7 @@ services:
     build:
       context: .
       dockerfile: ./worker/Dockerfile
+    container_name: opportunity-intake-chatbot-worker
     restart: unless-stopped
     volumes:
       - ./.docker/.ipython:/root/.ipython:cached
