@@ -44,37 +44,48 @@ class OpportunityIntakeCreationAgent:
         )
 
     def generate_response(
-        self, conversation_store: ConversationStore, user_input: str
+            self,
+            conversation_store: ConversationStore,
+            user_input: str
     ) -> Optional[Dict[str, Any]]:
-        chat_history = conversation_store.get_last_n_messages(n=15)
+        chat_history = conversation_store.get_last_n_messages(n=10)
 
         try:
-            response_content = invoke_llm_with_string_prompt(
-                prompt=self.prompt,
-                user_input=user_input,
+            formatted_prompt = self.prompt.format(
+                query=user_input,
                 chat_history=chat_history,
-                model="gpt-4.1-mini",
             )
 
-            if response_content:
+            from langchain_openai import ChatOpenAI
+            llm = ChatOpenAI(model="gpt-4o-mini", streaming=False)
+            response = llm.invoke(formatted_prompt)
+
+            if response.content:
                 conversation_store.add_conversation_turn(
                     user_input=user_input,
-                    assistant_response=response_content,
+                    assistant_response=response.content
                 )
 
                 return OpportunityResponse.build_opportunity_result(
                     user_input=user_input,
-                    opportunity_content=response_content,
+                    opportunity_content=response.content,
                 )
             else:
-                raise Exception("Opportunity intake creation agent returned no response")
+                raise Exception("Opportunity intake advisor agent returned no response")
+
         except Exception as e:
-            logger.exception(f"Opportunity intake creation agent encountered an error {e}")
-            return None
+            logger.warning(f"Opportunity intake advisor agent failed, using fallback: {e}")
+            return self._build_fallback_response(
+                user_input=user_input,
+                content={"error": "Chat failed. Please try again."}
+            )
 
     def _build_fallback_response(
-        self, user_input: str, content: str
+            self,
+            user_input: str,
+            content: Dict[str, Any]
     ) -> Dict[str, Any]:
         return OpportunityResponse.build_opportunity_result(
-            user_input=user_input, opportunity_content=content
-        ) 
+            user_input=user_input,
+            opportunity_content="I'm sorry, I encountered an error. Please try again.",
+        )

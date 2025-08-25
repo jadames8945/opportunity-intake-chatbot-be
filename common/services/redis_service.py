@@ -37,12 +37,14 @@ async def get_redis_client() -> AsyncGenerator[Redis, None]:
 
 
 async def listen_and_forward_redis_stream(
-    redis: Redis, result_channel: str, websocket: WebSocket
+        redis: Redis,
+        result_channel: str,
+        websocket: WebSocket
 ):
     last_id = "0-0"
     try:
         while True:
-            response = await redis.xread({result_channel: last_id}, block=5000, count=1)
+            response = await redis.xread({result_channel: last_id}, block=100, count=10)
             if response:
                 stream, messages = response[0]
                 for msg_id, msg in messages:
