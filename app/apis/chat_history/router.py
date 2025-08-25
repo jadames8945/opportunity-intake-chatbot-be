@@ -1,5 +1,6 @@
 import logging
 from typing import List, Dict
+from datetime import datetime
 
 from fastapi import APIRouter, Depends
 
@@ -83,7 +84,8 @@ async def save_chat_history(
             title += chunk.content
 
     clean_title = title.strip().strip('"').strip("'")
+    current_time = datetime.utcnow()
 
     task_id = queue_save_task(title=clean_title, chat_history=messages, username=username)
 
-    return {"title": clean_title, "task_id": task_id, "status": "queued"}
+    return {"title": clean_title, "task_id": task_id, "status": "queued", "created_at": current_time.isoformat()}

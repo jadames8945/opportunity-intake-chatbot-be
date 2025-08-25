@@ -42,7 +42,10 @@ class ChatHistoryRepository:
 
     def get_all_chat_histories(self, username: str) -> List[Dict]:
         try:
-            cursor = self.collection.find({"username": username}).sort("created_at", 1)
+            cursor = (self.collection
+                      .find({"username": username})
+                      .sort("created_at", -1))
+
             chat_histories = []
 
             for doc in cursor:
