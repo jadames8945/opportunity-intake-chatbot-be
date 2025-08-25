@@ -17,9 +17,8 @@ COPY ./auth/pyproject.toml ./auth/poetry.lock* ./
 RUN poetry install
 
 COPY auth/ auth/
-COPY common/ common/
 
-EXPOSE 8887
+COPY common/ common/
 
 RUN chmod +x auth/prestart.sh
 
