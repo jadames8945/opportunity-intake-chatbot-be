@@ -20,7 +20,8 @@ class AppConfig(BaseSettings):
 
         return [
             "http://localhost:3000",
-            "https://paypal-prd-agent.coolify.dd-dpe.com",
+            "http://localhost:3001",
+            "https://paypal-prd-agent.coolify.dd-dpg.com",
             "*",
         ]
 

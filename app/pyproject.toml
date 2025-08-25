@@ -23,6 +23,9 @@ pymongo = "^4.13.2"
 langchain-community = "^0.3.26"
 python-multipart = "^0.0.20"
 striprtf = "^0.0.26"
+PyJWT = "^2.8.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+pytz = "^2024.1"
 
 
 [build-system]

@@ -64,6 +64,7 @@ services:
       - .env
     environment:
       PYTHONPATH: .
+      PORT: 8998
       REDIS_SERVER: redis://redis:6379
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: root
