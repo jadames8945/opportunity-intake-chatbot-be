@@ -20,8 +20,11 @@ def get_chat_history_service() -> ChatHistoryService:
 
 
 @router.get("")
-def load_chat_history_on_login(chat_history_service: ChatHistoryService = Depends(get_chat_history_service)):
-    return chat_history_service.get_all_chat_histories()
+def load_chat_history_on_login(
+    username: str,
+    chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
+):
+    return chat_history_service.get_all_chat_histories(username)
 
 
 @router.post("/load")
@@ -31,12 +34,13 @@ def load_chat_history(
 ) -> List[Dict[str, str]]:
     logger.info(f"Received load request: session_id={request.session_id}, chat_title={request.chat_title}")
 
-    if request.session_id is None or request.chat_title is None:
-        raise Exception(f"session_id or chat_title cannot be None")
+    if request.session_id is None or request.chat_title is None or request.username is None:
+        raise Exception(f"session_id, chat_title, or username cannot be None")
 
     return chat_history_service.get_chat_history_from_database(
         session_id=request.session_id,
-        chat_title=request.chat_title
+        chat_title=request.chat_title,
+        username=request.username
     )
 
 
@@ -45,8 +49,8 @@ def delete_chat_history(
         request: ChatHistoryRequest,
         chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
 ) -> Dict[str, str]:
-    if not request.session_id or not request.chat_title:
-        raise Exception("session_id or chat_title cannot be None")
+    if not request.session_id or not request.chat_title or not request.username:
+        raise Exception("session_id, chat_title, or username cannot be None")
 
     return chat_history_service.delete_chat_history(request)
 
@@ -57,10 +61,11 @@ async def save_chat_history(
         chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, str]:
     session_id = request.session_id
+    username = request.username
     messages = request.messages if hasattr(request, 'messages') else []
 
-    if not session_id:
-        raise Exception("session_id cannot be None")
+    if not session_id or not username:
+        raise Exception("session_id and username cannot be None")
 
     if not messages:
         raise Exception("No messages provided")
@@ -79,6 +84,6 @@ async def save_chat_history(
 
     clean_title = title.strip().strip('"').strip("'")
 
-    task_id = queue_save_task(title=clean_title, chat_history=messages)
+    task_id = queue_save_task(title=clean_title, chat_history=messages, username=username)
 
     return {"title": clean_title, "task_id": task_id, "status": "queued"}

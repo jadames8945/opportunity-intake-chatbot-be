@@ -13,11 +13,10 @@ class ChatHistoryRepository:
         self.db = infra.mongo_client.get_database_connection()
         self.collection = self.db.chat_histories
 
-    def save_chat_history(self, title: str, chat_history: List[Dict[str, str]],
-                          email: str = "john_123@company.com") -> bool:
+    def save_chat_history(self, title: str, chat_history: List[Dict[str, str]], username: str) -> bool:
         try:
             document = {
-                "email": email,
+                "username": username,
                 "title": title,
                 "chat_history": chat_history,
                 "created_at": datetime.utcnow()
@@ -31,9 +30,9 @@ class ChatHistoryRepository:
             logger.error(f"Failed to save chat history: {e}")
             return False
 
-    def get_chat_history_by_title(self, title: str, email: str = "john_123@company.com") -> ChatHistory | None:
+    def get_chat_history_by_title(self, title: str, username: str) -> ChatHistory | None:
         try:
-            result: Dict = self.collection.find_one({"email": email, "title": title})
+            result: Dict = self.collection.find_one({"username": username, "title": title})
 
             return ChatHistory(**result)
 
@@ -41,9 +40,9 @@ class ChatHistoryRepository:
             logger.error(f"Failed to get chat history: {e}")
             return None
 
-    def get_all_chat_histories(self, email: str = "john_123@company.com") -> List[Dict]:
+    def get_all_chat_histories(self, username: str) -> List[Dict]:
         try:
-            cursor = self.collection.find({"email": email}).sort("created_at", 1)
+            cursor = self.collection.find({"username": username}).sort("created_at", 1)
             chat_histories = []
 
             for doc in cursor:
@@ -55,9 +54,9 @@ class ChatHistoryRepository:
             logger.error(f"Failed to get chat histories: {e}")
             return []
 
-    def delete_chat_history(self, title: str, email: str = "john_123@company.com"):
+    def delete_chat_history(self, title: str, username: str):
         try:
-            self.collection.delete_one({"email": email, "title": title})
+            self.collection.delete_one({"username": username, "title": title})
 
             return {"status": "success"}
         except Exception as e:
