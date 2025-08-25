@@ -11,13 +11,13 @@ CRITICAL: Your primary goal is to PRESERVE CONTEXT and not overwrite previous wo
 AVAILABLE_AGENTS = """
 Available agents:
 1. OPPORTUNITY_INTAKE_ADVISOR_AGENT - For opportunity intake consultation, opportunity refinement, and strategic business development guidance
-2. OPPORTUNITY_INTAKE_AGENT - For creating final opportunity profiles, business specifications, stakeholder requirements, and structured opportunity documentation
+2. OPPORTUNITY_INTAKE_CREATION_AGENT - For creating final opportunity profiles, business specifications, stakeholder requirements, and structured opportunity documentation
 """
 
 ROUTING_RULES = """
 Routing Rules:
 - If the user wants to discuss, refine, or explore opportunity ideas, requirements, or details → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
-- If the user says "create opportunity profile", "generate opportunity profile", "make opportunity profile", "create document", or similar → OPPORTUNITY_INTAKE_AGENT
+- If the user says "create opportunity intake form", "generate opportunity intake form", "make opportunity intake form", "create opportunity profile", "generate opportunity profile", "make opportunity profile", "create document", "generate document", or similar → OPPORTUNITY_INTAKE_CREATION_AGENT
 - If the user asks for general help, explanations, or casual conversation → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
 - If the user asks questions ABOUT existing content (explain, tell me about, what is, describe, summarize) → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
 - If the user asks for analysis or opinions about existing content → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
@@ -30,10 +30,11 @@ ROUTING_EXAMPLES = """
 Specific Examples:
 - "I have an opportunity to discuss" → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
 - "Help me think through this business opportunity" → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
-- "Create opportunity profile", "Generate opportunity profile", "Make opportunity profile" → OPPORTUNITY_INTAKE_AGENT
+- "Create opportunity intake form", "Generate opportunity intake form", "Make opportunity intake form" → OPPORTUNITY_INTAKE_CREATION_AGENT
+- "Create opportunity profile", "Generate opportunity profile", "Make opportunity profile" → OPPORTUNITY_INTAKE_CREATION_AGENT
+- "Create document", "Generate document" → OPPORTUNITY_INTAKE_CREATION_AGENT
 - "Hello, how are you?" → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
 - "What is this opportunity about?" → OPPORTUNITY_INTAKE_ADVISOR_AGENT (Opportunity Intake Advisor)
-- "Create document", "Generate document" → OPPORTUNITY_INTAKE_AGENT
 
 Questions ABOUT existing content → OPPORTUNITY_INTAKE_ADVISOR_AGENT:
 - "Tell me about the opportunity profile we just generated" → OPPORTUNITY_INTAKE_ADVISOR_AGENT
@@ -45,7 +46,7 @@ Questions ABOUT existing content → OPPORTUNITY_INTAKE_ADVISOR_AGENT:
 """
 
 RESPONSE_FORMAT = """
-Respond with ONLY the agent name: either "OPPORTUNITY_INTAKE_ADVISOR_AGENT" or "OPPORTUNITY_INTAKE_AGENT"
+Respond with ONLY the agent name: either "OPPORTUNITY_INTAKE_ADVISOR_AGENT" or "OPPORTUNITY_INTAKE_CREATION_AGENT"
 """
 
 ROUTER_INSTRUCTIONS = """
@@ -58,4 +59,5 @@ Instructions:
 - CRITICAL: Questions about existing content (explain, describe, tell me about, what is, summarize) should go to OPPORTUNITY_INTAKE_ADVISOR_AGENT
 - CRITICAL: Only route to specialized agents for CREATION tasks, not for questions about existing work
 - CRITICAL: Preserve context - don't overwrite previous work with new agents
+- CRITICAL: Keywords like "create", "generate", "make", "form", "profile", "document" should route to OPPORTUNITY_INTAKE_CREATION_AGENT
 """

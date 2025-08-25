@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Any, Optional, List
 
 from app.agent.opportunity_intake_advisor_agent import OpportunityIntakeAdvisorAgent
-from app.agent.opportunity_intake_agent import OpportunityIntakeAgent
+from app.agent.opportunity_intake_creation_agent import OpportunityIntakeCreationAgent
 from app.agent.router_agent import RouterAgent
 from app.config.conversation_store import ConversationStore
 
@@ -14,7 +14,7 @@ class UnifiedService:
     def __init__(self):
         self.router_agent = RouterAgent()
         self.opportunity_intake_advisor_agent = OpportunityIntakeAdvisorAgent()
-        self.opportunity_intake_agent = OpportunityIntakeAgent()
+        self.opportunity_intake_creation_agent = OpportunityIntakeCreationAgent()
 
     def handle_request(self, user_input: str, conversation_store: ConversationStore):
         logger.info(f"Handling request: {user_input}")
@@ -27,8 +27,8 @@ class UnifiedService:
             logger.info(f"Router chose: {agent_choice}")
 
             match agent_choice:
-                case "OPPORTUNITY_INTAKE_AGENT":
-                    return OpportunityIntakeAgent(), "opportunity_intake_agent"
+                case "OPPORTUNITY_INTAKE_CREATION_AGENT":
+                    return OpportunityIntakeCreationAgent(), "opportunity_intake_creation_agent"
                 case _:
                     return OpportunityIntakeAdvisorAgent(), "opportunity_intake_advisor_agent"
 

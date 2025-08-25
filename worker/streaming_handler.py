@@ -25,6 +25,35 @@ def handle_agent_streaming(
         if chat_history is None:
             chat_history = conversation_store.get_last_n_messages(15)
 
+        # Only stream for the creation agent, not the advisor
+        if agent_name == "opportunity_intake_creation_agent":
+            return _handle_streaming_response(
+                user_input, agent_instance, agent_name, result_channel, 
+                session, conversation_store, chat_history
+            )
+        else:
+            # For advisor agent, generate response without streaming
+            return _handle_non_streaming_response(
+                user_input, agent_instance, agent_name, result_channel,
+                session, conversation_store, chat_history
+            )
+
+    except Exception as e:
+        logger.exception(f"Agent response handling failed for {agent_name}: {e}")
+        return False
+
+
+def _handle_streaming_response(
+    user_input: str,
+    agent_instance,
+    agent_name: str,
+    result_channel: str,
+    session: str,
+    conversation_store,
+    chat_history: list,
+) -> bool:
+    """Handle streaming response for creation agent"""
+    try:
         prompt = agent_instance.prompt
 
         formatted_prompt = prompt.format(
@@ -68,6 +97,41 @@ def handle_agent_streaming(
 
     except Exception as e:
         logger.exception(f"Streaming failed for {agent_name}: {e}")
+        return False
+
+
+def _handle_non_streaming_response(
+    user_input: str,
+    agent_instance,
+    agent_name: str,
+    result_channel: str,
+    session: str,
+    conversation_store,
+    chat_history: list,
+) -> bool:
+    """Handle non-streaming response for advisor agent"""
+    try:
+        # Generate response using the agent's method
+        response = agent_instance.generate_response(conversation_store, user_input)
+        
+        if response:
+            # Publish the complete response immediately
+            _publish_chunk(
+                chunk="",
+                channel=result_channel,
+                agent_name=agent_name,
+                progress="complete",
+                final_result=response,
+            )
+            
+            logger.info(f"Non-streaming response completed for {agent_name} in session: {session}")
+            return True
+        else:
+            logger.error(f"Advisor agent returned no response for {agent_name}")
+            return False
+
+    except Exception as e:
+        logger.exception(f"Non-streaming response failed for {agent_name}: {e}")
         return False
 
 

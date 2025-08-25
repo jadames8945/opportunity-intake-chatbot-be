@@ -83,7 +83,7 @@ class RouterAgent:
 
             logger.info(f"Router response: '{response}' -> cleaned: '{agent_choice}'")
 
-            valid_agents = ["OPPORTUNITY_INTAKE_AGENT", "OPPORTUNITY_INTAKE_ADVISOR_AGENT"]
+            valid_agents = ["OPPORTUNITY_INTAKE_CREATION_AGENT", "OPPORTUNITY_INTAKE_ADVISOR_AGENT"]
 
             return agent_choice if any(agent in agent_choice for agent in valid_agents) else "OPPORTUNITY_INTAKE_ADVISOR_AGENT"
 

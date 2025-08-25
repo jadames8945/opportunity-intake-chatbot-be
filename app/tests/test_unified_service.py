@@ -5,41 +5,39 @@ Test script for the Unified Service
 
 import os
 import sys
-from pathlib import Path
+import pytest
+from unittest.mock import Mock, patch
+
+# Add the parent directory to the Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv(Path(__file__).parent.parent.parent / ".env")
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "app"))
-
+load_dotenv()
 
 def test_unified_service():
-    """Test the unified service directly"""
-    print("🧪 Testing Unified Service Directly")
-    print("=" * 40)
-
-    try:
-        from app.services.unified_service import UnifiedService
-
-        print("✅ Successfully imported Unified Service")
-
-        service = UnifiedService()
-        print("✅ Successfully created Unified Service instance")
-
-        # Test that the service has the expected agents
-        print(f"✅ Service has opportunity_intake_advisor_agent: {hasattr(service, 'opportunity_intake_advisor_agent')}")
-        print(f"✅ Service has opportunity_intake_agent: {hasattr(service, 'opportunity_intake_agent')}")
-        print(f"✅ Service has router_agent: {hasattr(service, 'router_agent')}")
-
-        print("✅ All tests passed!")
-
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        import traceback
-
-        traceback.print_exc()
-
+    """Test the UnifiedService class"""
+    
+    # Import the service
+    from app.services.unified_service import UnifiedService
+    
+    # Create an instance
+    service = UnifiedService()
+    
+    # Test that the service has the expected attributes
+    assert hasattr(service, 'router_agent')
+    assert hasattr(service, 'opportunity_intake_advisor_agent')
+    assert hasattr(service, 'opportunity_intake_creation_agent')
+    
+    print(f"✅ Service has router_agent: {hasattr(service, 'router_agent')}")
+    print(f"✅ Service has opportunity_intake_advisor_agent: {hasattr(service, 'opportunity_intake_advisor_agent')}")
+    print(f"✅ Service has opportunity_intake_creation_agent: {hasattr(service, 'opportunity_intake_creation_agent')}")
+    
+    # Test that the service can handle requests
+    assert hasattr(service, 'handle_request')
+    
+    print("✅ UnifiedService test passed!")
 
 if __name__ == "__main__":
     test_unified_service() 
