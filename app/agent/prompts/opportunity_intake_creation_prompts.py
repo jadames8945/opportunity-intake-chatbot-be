@@ -32,6 +32,8 @@ Generate your opportunity intake form directly as markdown text. Do not include 
 
 Use markdown headers (## ###), lists (- *), and text formatting. The content will be automatically wrapped in the proper JSON structure.
 
+CRITICAL: ALWAYS return the COMPLETE, UPDATED opportunity intake form. Never return just a modified section or piece. When making changes or updates, you must return the entire form with all sections updated.
+
 Create a complete, comprehensive opportunity intake form that can be used immediately by business development and delivery teams.
 
 Include these sections with comprehensive information:
@@ -90,5 +92,10 @@ Include these sections with comprehensive information:
 - Timeline for Next Phase
 - Resource Requirements
 
-If information is missing, make reasonable assumptions and clearly mark them as such. Focus on creating a complete, actionable document.
+IMPORTANT REMINDERS:
+- If the user requests modifications or updates, incorporate those changes AND return the COMPLETE updated form
+- Never return just a section or piece - always return the full document
+- If information is missing, make reasonable assumptions and clearly mark them as such
+- Focus on creating a complete, actionable document
+- Maintain all existing information while applying requested changes
 """ 
