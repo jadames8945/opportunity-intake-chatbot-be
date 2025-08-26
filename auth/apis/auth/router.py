@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from auth.exceptions.user_exceptions import check_credentials, MissingCredentialsException, UserException
-from auth.schemas.token import Token
 from auth.schemas.user import UserCredentials, User
 from auth.services.auth_service import AuthService
 
@@ -14,9 +13,11 @@ auth_router = APIRouter(
 def get_auth_service():
     return AuthService()
 
+
 @auth_router.get("")
 async def get_health_status():
-    return  {"status": "ok"}
+    return {"status": "ok"}
+
 
 @auth_router.post("/register", response_model=User)
 def register_user(
@@ -39,15 +40,15 @@ def register_user(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@auth_router.post("/login", response_model=Token)
+@auth_router.post("/login")
 def login_user(
         user_credentials: UserCredentials,
         auth_service: AuthService = Depends(get_auth_service)
-) -> Token:
+) -> User:
     try:
         check_credentials(user_credentials.username, user_credentials.password)
-        token = auth_service.login_user(user_credentials)
-        return token
+        result = auth_service.authenticate_user(user_credentials.username, user_credentials.password)
+        return result
     except MissingCredentialsException as e:
         raise HTTPException(status_code=400, detail=str(e))
     except ValueError as e:
