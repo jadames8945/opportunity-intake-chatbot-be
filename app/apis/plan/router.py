@@ -3,12 +3,10 @@ import logging
 import uuid
 from typing import Dict, Any
 
-
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends
 from pydantic import BaseModel
 from redis.asyncio import Redis
 
-from app.managers.ConnectionManager import ConnectionManager
 from app.services.unified_service import UnifiedService
 from app.util.websocket_helpers import handle_ack, handle_invoke
 from common.services.redis_service import get_redis_client
@@ -21,8 +19,8 @@ router = APIRouter(
 )
 
 
-def get_connection_manager():
-    return ConnectionManager()
+def get_unified_service():
+    return UnifiedService()
 
 
 @router.websocket("/ws")
