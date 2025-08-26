@@ -14,6 +14,9 @@ auth_router = APIRouter(
 def get_auth_service():
     return AuthService()
 
+@auth_router.get("")
+async def get_health_status():
+    return  {"status": "ok"}
 
 @auth_router.post("/register", response_model=User)
 def register_user(

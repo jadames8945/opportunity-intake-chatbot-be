@@ -20,6 +20,8 @@ COPY auth/ auth/
 
 COPY common/ common/
 
+EXPOSE 8887
+
 RUN chmod +x auth/prestart.sh
 
 CMD ["./auth/prestart.sh"]

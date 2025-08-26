@@ -37,7 +37,7 @@ def main():
     setup_middleware(app)
     setup_routes(app)
 
-    uvicorn.run(app, host="0.0.0.0", port=8946)
+    uvicorn.run(app, host="0.0.0.0", port=8887)
 
 if __name__ == '__main__':
     main()
