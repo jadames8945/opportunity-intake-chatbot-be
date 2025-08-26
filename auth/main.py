@@ -19,9 +19,9 @@ def setup_logging():
 def setup_middleware(app: FastAPI):
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=config.allowed_origins(),
+        allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+        allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["*"]
     )
