@@ -1,10 +1,10 @@
 import logging
 from typing import Optional
 
-from auth.repositories.auth_repository import AuthRepository
-from auth.schemas.token import Token
-from auth.schemas.user import UserCredentials, User
-from auth.services.token_service import TokenService
+from app.repository.auth_repository import AuthRepository
+from app.schemas.token import Token
+from app.schemas.user import User, UserCredentials
+from app.services.token_service import TokenService
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ import jwt
 import pytz
 from passlib.context import CryptContext
 
-from auth.configs.auth_settings import AuthSettings
+from app.config.auth_settings import AuthSettings
 
 
 class TokenService:

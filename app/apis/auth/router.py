@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 
-from auth.exceptions.user_exceptions import check_credentials, MissingCredentialsException, UserException
-from auth.schemas.user import UserCredentials, User
-from auth.services.auth_service import AuthService, logger
+from app.exceptions.user_exceptions import check_credentials, MissingCredentialsException, UserException
+from app.schemas.user import User, UserCredentials
+from app.services.auth_service import AuthService
+
+logger = logging.getLogger(__name__)
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -12,11 +16,6 @@ auth_router = APIRouter(
 
 def get_auth_service():
     return AuthService()
-
-
-@auth_router.get("")
-async def get_health_status():
-    return {"status": "ok"}
 
 
 @auth_router.post("/register", response_model=User)

@@ -2,7 +2,7 @@ import logging
 from typing import Optional, List, Any
 from bson import ObjectId
 
-from auth.schemas.user import User
+from app.schemas.user import User
 from common.mongo_infrastructure import infra
 from common.repositories.base_repository import BaseRepository
 
@@ -67,7 +67,6 @@ class AuthRepository(BaseRepository[User]):
         try:
             user_doc = self.collection.find_one({"username": username})
             if user_doc:
-                # Convert ObjectId to string
                 user_doc["id"] = str(user_doc.pop("_id"))
                 return User(**user_doc)
             return None
