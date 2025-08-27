@@ -38,10 +38,9 @@ async def load_chat_history(
     if request.session_id is None or request.chat_title is None or request.username is None:
         raise Exception(f"session_id, chat_title, or username cannot be None")
 
-    return await chat_history_service.get_chat_history_from_database(
+    return await chat_history_service.load_chat_history_into_store(
         session_id=request.session_id,
-        chat_title=request.chat_title,
-        username=request.username
+        messages=request.messages
     )
 
 
