@@ -10,7 +10,12 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /auth
 
-RUN pip install poetry==1.8.2
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir poetry==1.8.2
 
 COPY ./auth/pyproject.toml ./auth/poetry.lock* ./
 
@@ -19,6 +24,7 @@ RUN poetry install
 COPY auth/ auth/
 COPY app/ app/
 COPY common/ common/
+COPY worker/ worker/
 
 EXPOSE 8887
 

@@ -10,7 +10,12 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /backend
 
-RUN pip install poetry==1.8.2
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir poetry==1.8.2
 
 COPY ./app/pyproject.toml ./app/poetry.lock* ./
 
