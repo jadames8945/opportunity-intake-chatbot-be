@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from auth.exceptions.user_exceptions import check_credentials, MissingCredentialsException, UserException
 from auth.schemas.user import UserCredentials, User
-from auth.services.auth_service import AuthService
+from auth.services.auth_service import AuthService, logger
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -40,13 +40,15 @@ def register_user(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@auth_router.post("/login")
+@auth_router.post("/login", response_model=User)
 def login_user(
         user_credentials: UserCredentials,
         auth_service: AuthService = Depends(get_auth_service)
 ) -> User:
     try:
+        check_credentials(user_credentials.username, user_credentials.password)
         result = auth_service.authenticate_user(user_credentials.username, user_credentials.password)
+        logger.info(f"Logged in user {result}")
         return result
     except MissingCredentialsException as e:
         raise HTTPException(status_code=400, detail=str(e))
