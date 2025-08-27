@@ -28,74 +28,48 @@ Guidelines for creating opportunity intakes:
 """
 
 OPPORTUNITY_INTAKE_FORMAT = """
-Generate your opportunity intake form directly as markdown text. Do not include any JSON formatting or structure.
+Generate your opportunity intake form as JSON wrapped in markdown code blocks. 
 
-Use markdown headers (## ###), lists (- *), and text formatting. The content will be automatically wrapped in the proper JSON structure.
+CRITICAL: ALWAYS return the COMPLETE, UPDATED opportunity intake form in this exact JSON structure. Never return just a modified section or piece. When making changes or updates, you must return the entire form with all sections updated.
 
-CRITICAL: ALWAYS return the COMPLETE, UPDATED opportunity intake form. Never return just a modified section or piece. When making changes or updates, you must return the entire form with all sections updated.
+Return the response in this exact format:
 
-Create a complete, comprehensive opportunity intake form that can be used immediately by business development and delivery teams.
+```json
+{{
+  "client_name": "",
+  "deal_size": "",
+  "key_stakeholders": [],
+  "opportunity_overview": "",
+  "opportunity_source": "",
+  "opportunity_status": "",
+  "pursuit_lead": "",
+  "ai_component": "",
+  "urgency": "",
+  "preferred_platforms_technologies": "",
+  "requested_support": [],
+  "additional_notes": ""
+}}
+```
 
-Include these sections with comprehensive information:
-
-## Opportunity Overview
-- Project/Initiative Name
-- Brief Description
-- Business Value/Impact
-
-## Client Information
-- Client Name
-- Industry/Sector
-- Company Size
-- Key Contact Person
-
-## Opportunity Details
-- Deal Size (estimated range)
-- Opportunity Source (RFP, referral, existing client, etc.)
-- Current Status (Lead, Qualified, Proposal, Won, Lost)
-- Timeline/Urgency
-- Pursuit Lead
-
-## Technical Requirements
-- AI/ML Components
-- Preferred Platforms/Technologies
-- Integration Requirements
-- Scalability Needs
-
-## Stakeholders
-- Internal Stakeholders
-- External Stakeholders
-- Decision Makers
-- Technical Contacts
-
-## Support Requirements
-- Vision Development
-- Use Case Development
-- Platform Selection
-- Implementation Support
-- Proof of Concept
-- Training/Support
-
-## Risk Assessment
-- Technical Risks
-- Business Risks
-- Timeline Risks
-- Resource Risks
-
-## Success Criteria
-- Key Performance Indicators
-- Measurable Outcomes
-- Success Metrics
-
-## Next Steps
-- Immediate Actions Required
-- Timeline for Next Phase
-- Resource Requirements
+Field Descriptions:
+- client_name: Name of the client or company
+- deal_size: Estimated deal size (e.g., "$100K-$500K", "TBD", "Enterprise")
+- key_stakeholders: Array of key stakeholder names and roles
+- opportunity_overview: Brief description of the opportunity and business value
+- opportunity_source: How the opportunity was sourced (RFP, referral, existing client, etc.)
+- opportunity_status: Current status (Lead, Qualified, Proposal, Won, Lost)
+- pursuit_lead: Name of the person leading the pursuit
+- ai_component: Description of AI/ML components and requirements
+- urgency: Timeline and urgency level
+- preferred_platforms_technologies: Preferred or required technologies
+- requested_support: Array of support types needed (Vision Development, Use Case Development, Platform Selection, Implementation Support, Proof of Concept, Training/Support)
+- additional_notes: Any other relevant information or notes
 
 IMPORTANT REMINDERS:
-- If the user requests modifications or updates, incorporate those changes AND return the COMPLETE updated form
-- Never return just a section or piece - always return the full document
-- If information is missing, make reasonable assumptions and clearly mark them as such
-- Focus on creating a complete, actionable document
+- If the user requests modifications or updates, incorporate those changes AND return the COMPLETE updated JSON
+- Never return just a section or piece - always return the full JSON object
+- If information is missing, make reasonable assumptions and fill in the fields
+- Focus on creating a complete, actionable JSON document
 - Maintain all existing information while applying requested changes
+- Ensure the JSON is valid and properly formatted
 """ 
