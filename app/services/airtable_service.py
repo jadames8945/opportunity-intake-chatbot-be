@@ -1,6 +1,7 @@
 import logging
 import aiohttp
 from typing import Dict, Any, Optional
+from datetime import datetime
 from app.schemas.airtable_submission import AirtableSubmissionRequest
 from app.config.airtable_config import airtable_config
 
@@ -14,39 +15,30 @@ class AirtableService:
         if not self.config.is_configured():
             logger.warning("Airtable credentials not configured")
     
-    async def submit_opportunity_intake(self, submission: AirtableSubmissionRequest) -> Dict[str, Any]:
-        if not self.config.is_configured():
-            raise Exception("Airtable not configured")
-        
-        url = self.config.get_table_url()
-        headers = self.config.get_headers()
-        
-        fields = {
-            "Client Name": submission.data.client_name,
-            "Deal Size": submission.data.deal_size,
-            "Key Stakeholders": submission.data.key_stakeholders,
-            "Opportunity Overview": submission.data.opportunity_overview,
-            "Opportunity Source": submission.data.opportunity_source,
-            "Opportunity Status": submission.data.opportunity_status,
-            "Pursuit Lead": submission.data.pursuit_lead,
-            "AI Component": submission.data.ai_component,
-            "Urgency": submission.data.urgency,
-            "Preferred Platforms/Technologies": submission.data.preferred_platforms_technologies,
-            "Requested Support": submission.data.requested_support,
-            "Additional Notes": submission.data.additional_notes,
-            "FDE Status": "new",
-            "Username": submission.username,
-            "Session ID": submission.session_id
+    def _build_opportunity_fields(self, submission: AirtableSubmissionRequest) -> Dict[str, Any]:
+        current_date = datetime.now().strftime("%Y-%m-%d")
+
+        return {
+            "Opportunity Name": submission.data.client_name,
+            "Internal Stakeholders": ["recSZpAkfxGGG26kl"],
+            "Notes": f"Overview: {submission.data.opportunity_overview}\nAI Component: {submission.data.ai_component}\nDeal Size: {submission.data.deal_size}\nUrgency: {submission.data.urgency}\nAdditional: {submission.data.additional_notes}",
+            # "FDE Status": "",
+            "Date Created": current_date,
+            "Clients": ["rech6g1CGU9J2ojbY"],
+            # "Technology Preferences": [submission.data.preferred_platforms_technologies],
+            "Last Updated": current_date
         }
-        
-        data = {
+
+    def _create_airtable_payload(self, fields: Dict[str, Any]) -> Dict[str, Any]:
+        return {
             "records": [
                 {
                     "fields": fields
                 }
             ]
         }
-        
+
+    async def _make_airtable_request(self, url: str, headers: Dict[str, str], data: Dict[str, Any]) -> Dict[str, Any]:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, headers=headers, json=data) as response:
@@ -64,7 +56,7 @@ class AirtableService:
                         logger.error(f"Airtable API error: {response.status} - {error_text}")
                         return {
                             "success": False,
-                            "message": f"Airtable API error: {response.status}",
+                            "message": f"Airtable API error: {response.status} - {error_text}",
                             "record_id": None
                         }
         except Exception as e:
@@ -74,6 +66,18 @@ class AirtableService:
                 "message": f"Error submitting to Airtable: {str(e)}",
                 "record_id": None
             }
+
+    async def submit_opportunity_intake(self, submission: AirtableSubmissionRequest) -> Dict[str, Any]:
+        if not self.config.is_configured():
+            raise Exception("Airtable not configured")
+
+        url = self.config.get_table_url()
+        headers = self.config.get_headers()
+
+        fields = self._build_opportunity_fields(submission)
+        data = self._create_airtable_payload(fields)
+        
+        return await self._make_airtable_request(url, headers, data)
     
     async def get_opportunity_intakes(self, username: Optional[str] = None) -> Dict[str, Any]:
         if not self.config.is_configured():
@@ -109,5 +113,5 @@ class AirtableService:
             return {
                 "success": False,
                 "message": f"Error retrieving from Airtable: {str(e)}",
-                "records": []
+                "records": None
             } 
