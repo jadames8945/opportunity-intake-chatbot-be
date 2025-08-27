@@ -17,6 +17,7 @@ COPY ./auth/pyproject.toml ./auth/poetry.lock* ./
 RUN poetry install
 
 COPY auth/ auth/
+COPY app/ app/
 COPY common/ common/
 
 EXPOSE 8887

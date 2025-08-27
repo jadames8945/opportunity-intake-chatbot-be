@@ -17,6 +17,7 @@ COPY ./app/pyproject.toml ./app/poetry.lock* ./
 RUN poetry install
 
 COPY app/ app/
+COPY auth/ auth/
 COPY worker/ worker/
 COPY common/ common/
 
