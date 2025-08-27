@@ -62,7 +62,7 @@ class AirtableService:
             logger.info(f"No existing stakeholder found for: {stakeholder_name}")
             return None
 
-    def _build_opportunity_fields(self, submission: AirtableSubmissionRequest, client_id: Optional[str] = None, stakeholder_id: Optional[str] = None) -> Dict[str, Any]:
+    def _build_opportunity_payload(self, submission: AirtableSubmissionRequest, client_id: Optional[str] = None, stakeholder_id: Optional[str] = None) -> Dict[str, Any]:
         current_date = datetime.now().strftime("%Y-%m-%d")
         
         fields = {
@@ -79,9 +79,6 @@ class AirtableService:
         if stakeholder_id:
             fields["Internal Stakeholders"] = [stakeholder_id]
         
-        return fields
-    
-    def _create_airtable_payload(self, fields: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "records": [
                 {
@@ -123,15 +120,14 @@ class AirtableService:
         if not self.config.is_configured():
             raise Exception("Airtable not configured")
         
-        url = self.config.get_table_url()
+        url = f"{self.config.get_base_url()}/tblLI2z2WNe5nuf0N"
+
         headers = self.config.get_headers()
         
         client_id = await self.get_client(submission.data.client_name)
 
         stakeholder_id = await self.get_stakeholder(submission.data.pursuit_lead)
         
-        fields = self._build_opportunity_fields(submission, client_id, stakeholder_id)
-
-        data = self._create_airtable_payload(fields)
+        data = self._build_opportunity_payload(submission, client_id, stakeholder_id)
         
         return await self._make_airtable_request(url, headers, data) 
