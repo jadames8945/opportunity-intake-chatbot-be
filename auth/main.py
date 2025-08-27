@@ -1,10 +1,11 @@
 import logging
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from auth.apis.main_api_router import api_router
-from auth.configs.auth_config import config
+from common.configs.app_config import config
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ def setup_logging():
 def setup_middleware(app: FastAPI):
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=config.allowed_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -37,9 +38,9 @@ def main():
     setup_middleware(app)
     setup_routes(app)
 
-    logger.info(f"Starting auth service on port {config.PORT}")
+    logger.info(f"Starting auth service on port {config.AUTH_PORT}")
 
-    uvicorn.run(app, host="0.0.0.0", port=config.PORT)
+    uvicorn.run(app, host="0.0.0.0", port=config.AUTH_PORT)
 
 
 if __name__ == '__main__':

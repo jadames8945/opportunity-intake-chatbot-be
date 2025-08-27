@@ -1,11 +1,13 @@
 import os
 from typing import cast
 
+
 class AppConfig:
     def __init__(self):
         self.ENV = cast(str, os.getenv("ENV", "DEV"))
         self.PORT = int(os.getenv("PORT", "8888"))
-        
+        self.AUTH_PORT = int(os.getenv("AUTH_PORT", "8887"))
+
     def allowed_origins(self):
         env_origins = os.getenv("ALLOWED_ORIGINS")
         if env_origins:

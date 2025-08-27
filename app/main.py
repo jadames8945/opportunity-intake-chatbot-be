@@ -8,7 +8,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from dotenv import load_dotenv
 
 from app.apis.api_router import api_router
-from app.config.app_config import config
+from common.configs.app_config import config
 from common.redis_infrastructure import infra
 
 

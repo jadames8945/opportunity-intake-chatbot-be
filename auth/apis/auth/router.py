@@ -46,7 +46,6 @@ def login_user(
         auth_service: AuthService = Depends(get_auth_service)
 ) -> User:
     try:
-        check_credentials(user_credentials.username, user_credentials.password)
         result = auth_service.authenticate_user(user_credentials.username, user_credentials.password)
         return result
     except MissingCredentialsException as e:
