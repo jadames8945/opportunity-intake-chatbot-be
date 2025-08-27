@@ -21,15 +21,15 @@ def get_chat_history_service() -> ChatHistoryService:
 
 
 @router.get("")
-def load_chat_history_on_login(
+async def load_chat_history_on_login(
     username: str,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
 ):
-    return chat_history_service.get_all_chat_histories(username)
+    return await chat_history_service.get_all_chat_histories(username)
 
 
 @router.post("/load")
-def load_chat_history(
+async def load_chat_history(
         request: ChatHistoryRequest,
         chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> List[Dict[str, str]]:
@@ -38,7 +38,7 @@ def load_chat_history(
     if request.session_id is None or request.chat_title is None or request.username is None:
         raise Exception(f"session_id, chat_title, or username cannot be None")
 
-    return chat_history_service.get_chat_history_from_database(
+    return await chat_history_service.get_chat_history_from_database(
         session_id=request.session_id,
         chat_title=request.chat_title,
         username=request.username
@@ -46,14 +46,14 @@ def load_chat_history(
 
 
 @router.delete("/delete")
-def delete_chat_history(
+async def delete_chat_history(
         request: ChatHistoryRequest,
         chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
 ) -> Dict[str, str]:
     if not request.session_id or not request.chat_title or not request.username:
         raise Exception("session_id, chat_title, or username cannot be None")
 
-    return chat_history_service.delete_chat_history(request)
+    return await chat_history_service.delete_chat_history(request)
 
 
 @router.post("/save")

@@ -19,14 +19,14 @@ def get_auth_service():
 
 
 @auth_router.post("/register", response_model=User)
-def register_user(
+async def register_user(
         user: User,
         auth_service: AuthService = Depends(get_auth_service)
 ) -> User:
     try:
         check_credentials(user.username, user.password)
 
-        user_response = auth_service.register_user(user)
+        user_response = await auth_service.register_user(user)
 
         return user_response
     except MissingCredentialsException as e:
@@ -40,13 +40,13 @@ def register_user(
 
 
 @auth_router.post("/login", response_model=User)
-def login_user(
+async def login_user(
         user_credentials: UserCredentials,
         auth_service: AuthService = Depends(get_auth_service)
 ) -> User:
     try:
         check_credentials(user_credentials.username, user_credentials.password)
-        result = auth_service.authenticate_user(user_credentials.username, user_credentials.password)
+        result = await auth_service.authenticate_user(user_credentials.username, user_credentials.password)
         logger.info(f"Logged in user {result}")
         return result
     except MissingCredentialsException as e:

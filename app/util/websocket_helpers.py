@@ -134,24 +134,19 @@ def queue_save_task(
         username: str
 ) -> str:
     try:
-        from app.services.chat_history_service import ChatHistoryService
+        from worker.tasks import save_chat_history_task
         
-        service = ChatHistoryService()
-
-        success = service.save_to_mongodb(
+        task = save_chat_history_task.delay(
             title=title,
             chat_history=chat_history,
             username=username
         )
         
-        task_id = str(uuid.uuid4())
-        if success:
-            logger.info(f"Saved chat history to MongoDB: {task_id}")
-        else:
-            logger.error(f"Failed to save chat history to MongoDB: {task_id}")
+        task_id = str(task.id)
+        logger.info(f"Queued chat history save task: {task_id}")
         
         return task_id
 
     except Exception as e:
-        logger.error(f"Failed to save chat history: {e}")
+        logger.error(f"Failed to queue save task: {e}")
         return str(uuid.uuid4())

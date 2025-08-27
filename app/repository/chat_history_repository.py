@@ -13,7 +13,7 @@ class ChatHistoryRepository:
         self.db = infra.mongo_client.get_database_connection()
         self.collection = self.db.chat_histories
 
-    def save_chat_history(self, title: str, chat_history: List[Dict[str, str]], username: str) -> bool:
+    async def save_chat_history(self, title: str, chat_history: List[Dict[str, str]], username: str) -> bool:
         try:
             document = {
                 "username": username,
@@ -22,7 +22,7 @@ class ChatHistoryRepository:
                 "created_at": datetime.utcnow()
             }
 
-            result = self.collection.insert_one(document)
+            result = await self.collection.insert_one(document)
             logger.info(f"Saved chat history with ID: {result.inserted_id}")
             return True
 
@@ -30,9 +30,9 @@ class ChatHistoryRepository:
             logger.error(f"Failed to save chat history: {e}")
             return False
 
-    def get_chat_history_by_title(self, title: str, username: str) -> ChatHistory | None:
+    async def get_chat_history_by_title(self, title: str, username: str) -> ChatHistory | None:
         try:
-            result: Dict = self.collection.find_one({"username": username, "title": title})
+            result: Dict = await self.collection.find_one({"username": username, "title": title})
 
             return ChatHistory(**result)
 
@@ -40,7 +40,7 @@ class ChatHistoryRepository:
             logger.error(f"Failed to get chat history: {e}")
             return None
 
-    def get_all_chat_histories(self, username: str) -> List[Dict]:
+    async def get_all_chat_histories(self, username: str) -> List[Dict]:
         try:
             cursor = (self.collection
                       .find({"username": username})
@@ -48,7 +48,8 @@ class ChatHistoryRepository:
 
             chat_histories = []
 
-            for doc in cursor:
+            docs = await cursor.to_list(length=None)
+            for doc in docs:
                 doc["_id"] = str(doc["_id"])
                 chat_histories.append(doc)
 
@@ -57,9 +58,9 @@ class ChatHistoryRepository:
             logger.error(f"Failed to get chat histories: {e}")
             return []
 
-    def delete_chat_history(self, title: str, username: str):
+    async def delete_chat_history(self, title: str, username: str):
         try:
-            self.collection.delete_one({"username": username, "title": title})
+            await self.collection.delete_one({"username": username, "title": title})
 
             return {"status": "success"}
         except Exception as e:

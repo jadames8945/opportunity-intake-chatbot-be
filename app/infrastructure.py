@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from common.mongo_infrastructure import infra as mongo_infra
 from common.redis_infrastructure import infra as redis_infra
@@ -32,7 +32,7 @@ class AppInfrastructure:
         return redis_infra.redis_client
 
     @property
-    def mongo_client(self) -> MongoClient:
+    def mongo_client(self) -> AsyncIOMotorClient:
         return mongo_infra.mongo_config
 
     def is_initialized(self) -> bool:

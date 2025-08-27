@@ -1,7 +1,7 @@
 import logging
 import os
 
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class MongoConfig:
 
     def setup(self):
         try:
-            client = MongoClient(
+            client = AsyncIOMotorClient(
                 self.MONGO_URI,
                 maxPoolSize=10,
                 minPoolSize=2,
