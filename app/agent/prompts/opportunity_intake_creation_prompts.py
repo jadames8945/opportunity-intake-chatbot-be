@@ -53,11 +53,11 @@ Return the response in this exact format:
 
 Field Descriptions:
 - client_name: Name of the client or company
-- deal_size: Estimated deal size (e.g., "$100K-$500K", "TBD", "Enterprise")
-- key_stakeholders: Array of key stakeholder names and roles
+- deal_size: Estimated revenue potential from this opportunity (e.g., "$100K-$500K", "TBD", "Enterprise")
+- key_stakeholders: Array of key stakeholder full names - must include first and last name (e.g., ["John Smith", "Joe Heart", "Sarah Johnson"])
 - opportunity_overview: Brief description of the opportunity and business value
-- opportunity_source: How the opportunity was sourced (RFP, referral, existing client, etc.)
-- opportunity_status: Current status (Lead, Qualified, Proposal, Won, Lost)
+- opportunity_source: How the opportunity was sourced (Referral, Inbound, Outbound, Existing Client)
+- opportunity_status: Current status (New, Under Review, Qualified, Client Engaged / In Progress, On Hold / Deferred, Closed - Won, Closed - Lost)
 - pursuit_lead: Name of the person leading the pursuit
 - ai_component: Description of AI/ML components and requirements
 - urgency: Urgency level - ONLY use "High", "Medium", or "Low"
