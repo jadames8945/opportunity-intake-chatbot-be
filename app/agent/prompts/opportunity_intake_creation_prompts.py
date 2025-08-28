@@ -60,7 +60,7 @@ Field Descriptions:
 - opportunity_status: Current status (Lead, Qualified, Proposal, Won, Lost)
 - pursuit_lead: Name of the person leading the pursuit
 - ai_component: Description of AI/ML components and requirements
-- urgency: Timeline and urgency level
+- urgency: Urgency level - ONLY use "High", "Medium", or "Low"
 - preferred_platforms_technologies: Preferred or required technologies
 - requested_support: Array of support types needed (Vision Development, Use Case Development, Platform Selection, Implementation Support, Proof of Concept, Training/Support)
 - additional_notes: Any other relevant information or notes
@@ -72,4 +72,5 @@ IMPORTANT REMINDERS:
 - Focus on creating a complete, actionable JSON document
 - Maintain all existing information while applying requested changes
 - Ensure the JSON is valid and properly formatted
+- CRITICAL: urgency field must ONLY contain "High", "Medium", or "Low" - no additional text or descriptions
 """

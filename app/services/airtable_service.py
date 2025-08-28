@@ -76,6 +76,7 @@ class AirtableService:
             "Opportunity Size": submission.data.deal_size,
             "FDE Status": submission.data.opportunity_status,
             "Urgency": submission.data.urgency,
+            "Source": submission.data.opportunity_source,
             "Technology Preferences": submission.data.preferred_platforms_technologies,
             "Date Created": current_date,
             "Last Updated": current_date
