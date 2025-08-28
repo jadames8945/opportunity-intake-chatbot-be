@@ -74,6 +74,7 @@ class AirtableService:
             "Opportunity Name": submission.data.client_name,
             "Notes": f"Overview: {submission.data.opportunity_overview}\nAI Component: {submission.data.ai_component}\n\nUrgency: {submission.data.urgency}\nAdditional: {submission.data.additional_notes}",
             "Opportunity Size": submission.data.deal_size,
+            "FDE Status": submission.data.opportunity_status,
             "Technology Preferences": submission.data.preferred_platforms_technologies,
             "Date Created": current_date,
             "Last Updated": current_date
