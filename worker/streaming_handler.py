@@ -59,16 +59,30 @@ def _handle_streaming_response(
         llm = ChatOpenAI(model="gpt-4.1-mini", streaming=True)
 
         full_response = ""
+        buffer = ""
+        chunk_size = 15
 
         for chunk in llm.stream(formatted_prompt):
             if chunk.content:
                 full_response += chunk.content
-                _publish_chunk(
-                    chunk=chunk.content,
-                    channel=result_channel,
-                    agent_name=agent_name,
-                    progress="streaming",
-                )
+                buffer += chunk.content
+                
+                if len(buffer) >= chunk_size:
+                    _publish_chunk(
+                        chunk=buffer,
+                        channel=result_channel,
+                        agent_name=agent_name,
+                        progress="streaming",
+                    )
+                    buffer = ""
+
+        if buffer:
+            _publish_chunk(
+                chunk=buffer,
+                channel=result_channel,
+                agent_name=agent_name,
+                progress="streaming",
+            )
 
         if full_response:
             conversation_store.add_conversation_turn(
