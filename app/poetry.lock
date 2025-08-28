@@ -916,6 +916,17 @@ files = [
 all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
 
 [[package]]
+name = "inflection"
+version = "0.5.1"
+description = "A port of Ruby on Rails inflector to Python"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
+    {file = "inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417"},
+]
+
+[[package]]
 name = "jiter"
 version = "0.10.0"
 description = "Fast iterable JSON parser."
@@ -1728,6 +1739,27 @@ files = [
     {file = "propcache-0.3.2-py3-none-any.whl", hash = "sha256:98f1ec44fb675f5052cccc8e609c46ed23a35a1cfd18545ad4e29002d858a43f"},
     {file = "propcache-0.3.2.tar.gz", hash = "sha256:20d7d62e4e7ef05f221e0db2856b979540686342e7dd9973b815599c7057e168"},
 ]
+
+[[package]]
+name = "pyairtable"
+version = "3.2.0"
+description = "Python Client for the Airtable API"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyairtable-3.2.0-py2.py3-none-any.whl", hash = "sha256:2deb6f48dcc065078a2a76047c0bf2ff0ca4d7074664fbd3964b1bf24d789eff"},
+    {file = "pyairtable-3.2.0.tar.gz", hash = "sha256:f6fd1e3abdc28014dbecde8591c826560c5cb5a2d389e518647c2e5ecb88478d"},
+]
+
+[package.dependencies]
+inflection = "*"
+pydantic = ">=2,<3"
+requests = ">=2.22.0"
+typing_extensions = "*"
+urllib3 = ">=1.26"
+
+[package.extras]
+cli = ["click"]
 
 [[package]]
 name = "pydantic"
@@ -3071,4 +3103,4 @@ cffi = ["cffi (>=1.17)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "a4c10e999ff16b0d10673436a5c4624be56751fbe234f84f9a9962ff6da4aab3"
+content-hash = "f9443ec2f1c69cf7fa37cffee20912c64735c5cda822d1a01787091c4e363eb0"

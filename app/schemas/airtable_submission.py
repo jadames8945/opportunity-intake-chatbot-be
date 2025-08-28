@@ -12,7 +12,7 @@ class OpportunityIntakeData(BaseModel):
     pursuit_lead: str
     ai_component: str
     urgency: str
-    preferred_platforms_technologies: str
+    preferred_platforms_technologies: List[str]
     requested_support: List[str]
     additional_notes: Optional[str] = ""
 

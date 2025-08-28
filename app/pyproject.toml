@@ -18,7 +18,6 @@ langchain-openai = "^0.3.18"
 debugpy = "^1.8.14"
 pydevd-pycharm = "^252.18003.35"
 python-dotenv = "^1.1.0"
-aiohttp = "^3.10.0"
 
 pymongo = "^4.13.2"
 motor = "^3.6.0"
@@ -28,6 +27,7 @@ striprtf = "^0.0.26"
 PyJWT = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pytz = "^2024.1"
+pyairtable = "^3.2.0"
 
 
 [build-system]

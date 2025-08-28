@@ -45,7 +45,7 @@ Return the response in this exact format:
   "pursuit_lead": "",
   "ai_component": "",
   "urgency": "",
-  "preferred_platforms_technologies": "",
+  "preferred_platforms_technologies": [],
   "requested_support": [],
   "additional_notes": ""
 }}
@@ -72,4 +72,4 @@ IMPORTANT REMINDERS:
 - Focus on creating a complete, actionable JSON document
 - Maintain all existing information while applying requested changes
 - Ensure the JSON is valid and properly formatted
-""" 
+"""
