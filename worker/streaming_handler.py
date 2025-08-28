@@ -1,4 +1,5 @@
 import logging
+from typing import List, Dict
 
 from langchain_openai import ChatOpenAI
 
@@ -45,7 +46,7 @@ def _handle_streaming_response(
         result_channel: str,
         session: str,
         conversation_store,
-        chat_history: list,
+        chat_history: List[Dict[str, str]]
 ) -> bool:
     try:
         prompt = agent_instance.prompt

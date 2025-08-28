@@ -1,10 +1,8 @@
 import json
 import logging
 import uuid
-from typing import Dict, Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from redis.asyncio import Redis
 
 from app.services.unified_service import UnifiedService

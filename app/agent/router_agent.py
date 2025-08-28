@@ -57,7 +57,7 @@ class RouterAgent:
                 recent_messages = conversation_store.get_last_n_messages(n=10)
                 if recent_messages:
                     chat_history = "\n".join(
-                        [f"{msg['role']}: {msg['content']}" for msg in recent_messages]
+                        [f"{msg.get('type', msg.get('role', 'unknown'))}: {msg['content']}" for msg in recent_messages]
                     )
 
                     logger.info(

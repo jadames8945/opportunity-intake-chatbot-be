@@ -156,7 +156,7 @@ def format_chat_history_for_prompt(chat_history: List[Dict[str, str]]) -> str:
 
     formatted_history = []
     for msg in chat_history:
-        role = msg.get("role", "unknown")
+        role = msg.get("type", msg.get("role", "unknown"))
         content = msg.get("content", "")
         formatted_history.append(f"{role.capitalize()}: {content}")
 
