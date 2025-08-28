@@ -1,5 +1,5 @@
-import logging
 import asyncio
+import logging
 
 from worker.config import worker_app
 
@@ -12,7 +12,7 @@ def save_chat_history_task(title: str, chat_history: list, username: str):
         from app.services.chat_history_service import ChatHistoryService
 
         service = ChatHistoryService()
-        
+
         success = asyncio.run(service.save_to_mongodb(title, chat_history, username))
 
         if success:
@@ -28,14 +28,19 @@ def save_chat_history_task(title: str, chat_history: list, username: str):
 
 
 @worker_app.task(name="invoke_unified_stream")
-def invoke_unified_stream(user_input: str, session: str, result_channel: str, chat_history: list = None) -> bool:
+def invoke_unified_stream(
+        user_input: str,
+        session_id: str,
+        result_channel: str,
+        chat_history: list = None
+) -> bool:
     try:
         from app.services.unified_service import UnifiedService
         from worker.streaming_handler import handle_agent_streaming
         from app.infrastructure import infra
 
-        conversation_store = infra.get_conversation_store(session_id=session)
-        
+        conversation_store = infra.get_conversation_store(session_id=session_id)
+
         if chat_history:
             conversation_store.clear_history()
             conversation_store.set_messages(chat_history)
@@ -52,7 +57,7 @@ def invoke_unified_stream(user_input: str, session: str, result_channel: str, ch
             agent_instance=agent,
             agent_name=agent_name,
             result_channel=result_channel,
-            session=session,
+            session_id=session_id,
             conversation_store=conversation_store,
         )
 

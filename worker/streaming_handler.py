@@ -13,7 +13,7 @@ def handle_agent_streaming(
         agent_instance,
         agent_name: str,
         result_channel: str,
-        session: str,
+        session_id: str,
         conversation_store=None,
         chat_history: list = None,
 ) -> bool:
@@ -21,14 +21,16 @@ def handle_agent_streaming(
         if conversation_store is None:
             from app.infrastructure import infra
 
-            conversation_store = infra.get_conversation_store(session_id=session)
+            conversation_store = infra.get_conversation_store(session_id=session_id)
 
         if chat_history is None:
             chat_history = conversation_store.get_last_n_messages(15)
 
+        logger.info(f"session_id:{session_id} chat history: {chat_history}")
+
         return _handle_streaming_response(
             user_input, agent_instance, agent_name, result_channel,
-            session, conversation_store, chat_history
+            session_id, conversation_store, chat_history
         )
 
     except Exception as e:

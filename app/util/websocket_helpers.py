@@ -50,7 +50,7 @@ async def _invoke_background_task(
 
         invoke_unified_stream.delay(
             user_input=user_input,
-            session=session_id,
+            session_id=session_id,
             result_channel=result_channel,
             chat_history=chat_history
         )

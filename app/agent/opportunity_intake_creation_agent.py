@@ -1,20 +1,16 @@
 import logging
-import uuid
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 
 from app.agent.prompts.opportunity_intake_creation_prompts import (
-    OPPORTUNITY_INTAKE_ROLE, 
-    OPPORTUNITY_INTAKE_CAPABILITIES, 
-    OPPORTUNITY_INTAKE_GUIDELINES, 
+    OPPORTUNITY_INTAKE_ROLE,
+    OPPORTUNITY_INTAKE_CAPABILITIES,
+    OPPORTUNITY_INTAKE_GUIDELINES,
     OPPORTUNITY_INTAKE_FORMAT
 )
 from app.config.conversation_store import ConversationStore
 from app.schemas.opportunity_response import OpportunityResponse
-from common.utils.llm_util import invoke_llm_with_string_prompt, validate_agent_response
 
 logger = logging.getLogger(__name__)
 
