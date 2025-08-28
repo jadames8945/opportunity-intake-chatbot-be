@@ -18,7 +18,8 @@ class AirtableService:
             logger.warning("Airtable credentials not configured")
 
     async def get_table_data(
-            self, table_id: str,
+            self,
+            table_id: str,
             filter_formula: Optional[str] = None,
             max_records: int = 100
     ) -> Optional[Dict[str, Any]]:
@@ -48,7 +49,7 @@ class AirtableService:
 
     async def get_client(self, client_name: str) -> Optional[str]:
         filter_formula = f"{{Name}}='{client_name}'"
-        result = await self.get_table_data("tbl3HMYotN9F1qWjP", filter_formula, 1)
+        result = await self.get_table_data(self.config.client_table_id, filter_formula, 1)
 
         if result and result.get("records"):
             record_id = result["records"][0].get("id")
@@ -58,31 +59,38 @@ class AirtableService:
             logger.info(f"No existing client found for: {client_name}")
             return None
 
-    async def get_stakeholder(self, stakeholder_names: List[str]) -> Optional[List[str]]:
-        if not stakeholder_names:
+    async def get_reference_records(self, names: List[str], table_id: str, entity_type: str) -> Optional[List[str]]:
+        if not names:
             return None
 
-        if len(stakeholder_names) == 1:
-            filter_formula = f"{{Name}}='{stakeholder_names[0]}'"
+        if len(names) == 1:
+            filter_formula = f"{{Name}}='{names[0]}'"
         else:
-            name_conditions = [f"{{Name}}='{name}'" for name in stakeholder_names]
+            name_conditions = [f"{{Name}}='{name}'" for name in names]
             filter_formula = f"OR({', '.join(name_conditions)})"
 
-        result = await self.get_table_data("tblbbJI9qgVo8ZHtz", filter_formula, len(stakeholder_names))
+        result = await self.get_table_data(table_id, filter_formula, len(names))
 
         if result and result.get("records"):
             record_ids = [record.get("id") for record in result["records"]]
-            logger.info(f"Found existing stakeholders: {record_ids}")
+            logger.info(f"Found existing {entity_type}: {record_ids}")
             return record_ids
         else:
-            logger.info(f"No existing stakeholders found for: {stakeholder_names}")
+            logger.info(f"No existing {entity_type} found for: {names}")
             return None
+
+    async def get_stakeholder(self, stakeholder_names: List[str]) -> Optional[List[str]]:
+        return await self.get_reference_records(
+            names=stakeholder_names,
+            table_id=self.config.stakeholder_table_id,
+            entity_type="stakeholders"
+        )
 
     def _build_opportunity_payload(
             self,
             submission: AirtableSubmissionRequest,
             client_id: Optional[str] = None,
-            stakeholder_ids: Optional[str] = None
+            stakeholder_ids: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         current_date = datetime.now().strftime("%Y-%m-%d")
 
@@ -95,7 +103,7 @@ class AirtableService:
         }
 
         if client_id:
-            fields["Clients"] = client_id
+            fields["Clients"] = [client_id]
 
         if stakeholder_ids:
             fields["Internal Stakeholders"] = stakeholder_ids
@@ -140,8 +148,8 @@ class AirtableService:
     async def submit_opportunity_intake(self, submission: AirtableSubmissionRequest) -> Dict[str, Any]:
         if not self.config.is_configured():
             raise Exception("Airtable not configured")
-
-        url: str = f"{self.config.get_base_url()}/tblLI2z2WNe5nuf0N"
+            
+        opportunity_table_url: str = f"{self.config.get_base_url()}/{self.config.opportunity_table_id}"
 
         headers: Dict[str, Any] = self.config.get_headers()
 
@@ -152,11 +160,11 @@ class AirtableService:
         data: Dict[str, Any] = self._build_opportunity_payload(
             submission=submission,
             client_id=client_id,
-            stakeholder_ids=stakeholder_ids
+            stakeholder_ids= stakeholder_ids
         )
 
         return await self._make_airtable_request(
-            url=url,
+            url=opportunity_table_url,
             headers=headers,
             data=data
         )

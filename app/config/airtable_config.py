@@ -6,6 +6,10 @@ class AirtableConfig:
     def __init__(self):
         self.base_id: str = "appUbE4r8Z4HaPdwI"
         self.api_key: Optional[str] = os.getenv("AIRTABLE_API_KEY")
+        
+        self.opportunity_table_id: str = "tblLI2z2WNe5nuf0N"
+        self.client_table_id: str = "tbl3HMYotN9F1qWjP"
+        self.stakeholder_table_id: str = "tblbbJI9qgVo8ZHtz"
 
     def is_configured(self) -> bool:
         return bool(self.api_key)
