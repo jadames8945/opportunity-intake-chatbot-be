@@ -5,11 +5,12 @@ from typing import List, Optional
 class OpportunityIntakeData(BaseModel):
     client_name: str
     deal_size: str
-    key_stakeholders: List[str]
+    internal_stakeholders: List[str]
+    external_stakeholders: List[str]
+    pursuit_lead: str
     opportunity_overview: str
     opportunity_source: str
     opportunity_status: str
-    pursuit_lead: str
     ai_component: str
     urgency: str
     preferred_platforms_technologies: List[str]

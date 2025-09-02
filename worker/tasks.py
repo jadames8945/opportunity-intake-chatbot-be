@@ -31,8 +31,7 @@ def save_chat_history_task(title: str, chat_history: list, username: str):
 def invoke_unified_stream(
         user_input: str,
         session_id: str,
-        result_channel: str,
-        chat_history: list = None
+        result_channel: str
 ) -> bool:
     try:
         from app.services.unified_service import UnifiedService
@@ -40,10 +39,6 @@ def invoke_unified_stream(
         from app.infrastructure import infra
 
         conversation_store = infra.get_conversation_store(session_id=session_id)
-
-        if chat_history:
-            conversation_store.clear_history()
-            conversation_store.set_messages(chat_history)
 
         unified_service = UnifiedService()
 

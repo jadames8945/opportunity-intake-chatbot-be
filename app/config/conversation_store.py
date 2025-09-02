@@ -33,7 +33,7 @@ class ConversationStore:
         logger.info(f"Retrieved {len(messages)} messages from conversation store for session {self.session_id}")
         return messages
 
-    def get_all_messages(self, user_id: str = None) -> List[Dict[str, str]]:
+    def get_all_messages(self) -> List[Dict[str, str]]:
         return self._messages.copy()
 
     def clear_history(self, user_id: str = None):

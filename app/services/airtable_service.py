@@ -96,11 +96,12 @@ class AirtableService:
 
         try:
             client_id = await self.get_client(submission.data.client_name)
-            stakeholder_ids = await self.get_stakeholders(submission.data.key_stakeholders)
+
+            stakeholder_ids = await self.get_stakeholders(submission.data.internal_stakeholders)
 
             fields = self._build_opportunity_fields(submission, client_id, stakeholder_ids)
 
-            record = self.opportunity_table.create(fields)
+            record = self.opportunity_table.create(fields, typecast=True)
             record_id = record['id']
 
             logger.info(f"Successfully submitted to Airtable: {record_id}")

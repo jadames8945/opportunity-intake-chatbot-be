@@ -38,11 +38,11 @@ Return the response in this exact format:
 {{
   "client_name": "",
   "deal_size": "",
-  "key_stakeholders": [],
-  "opportunity_overview": "",
+  "internal_stakeholders": [],
+  "external_stakeholders": [],
+  "pursuit_lead": "",  "opportunity_overview": "",
   "opportunity_source": "",
   "opportunity_status": "",
-  "pursuit_lead": "",
   "ai_component": "",
   "urgency": "",
   "preferred_platforms_technologies": [],
@@ -52,14 +52,13 @@ Return the response in this exact format:
 ```
 
 Field Descriptions:
-- client_name: Name of the client or company
+CRITICAL NAME EXTRACTION RULE: When processing names for pursuit_lead, external_stakeholders, or internal_stakeholders, ONLY extract the first name and last name. Do NOT include titles, roles, descriptions, or parenthetical information. Examples: "Tim Juravich (CTO)" → "Tim Juravich", "Jerry Roper (LCSP, primary contact)" → "Jerry Roper", "Sarah Johnson (CTO, decision maker)" → "Sarah Johnson".
 - deal_size: Estimated revenue potential from this opportunity (e.g., "$100K-$500K", "TBD", "Enterprise")
-- key_stakeholders: Array of key stakeholder full names - must include first and last name (e.g., ["John Smith", "Joe Heart", "Sarah Johnson"])
-- opportunity_overview: Brief description of the opportunity and business value
+- internal_stakeholders: Array of internal team member names (e.g., ["John Smith", "Jane Doe"])
+- external_stakeholders: Array of client-side stakeholder names (e.g., ["Sarah Johnson", "Mike Wilson"])
 - opportunity_source: How the opportunity was sourced (Referral, Inbound, Outbound, Existing Client)
-- opportunity_status: Current status (New, Under Review, Qualified, Client Engaged / In Progress, On Hold / Deferred, Closed - Won, Closed - Lost)
+- opportunity_status: Current status (new, identified, contacted, qualified, proposal submitted, verbal commit, won etc)
 - pursuit_lead: Name of the person leading the pursuit
-- ai_component: Description of AI/ML components and requirements
 - urgency: Urgency level - ONLY use "High", "Medium", or "Low"
 - preferred_platforms_technologies: Preferred or required technologies
 - requested_support: Array of support types needed (Vision Development, Use Case Development, Platform Selection, Implementation Support, Proof of Concept, Training/Support)

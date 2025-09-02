@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from langchain_openai import ChatOpenAI
 
+from app.config.conversation_store import ConversationStore
 from common.redis_infrastructure import infra
 from common.utils.llm_util import format_chat_history_for_prompt
 
@@ -15,17 +16,11 @@ def handle_agent_streaming(
         agent_name: str,
         result_channel: str,
         session_id: str,
-        conversation_store=None,
-        chat_history: list = None,
+        conversation_store: ConversationStore,
 ) -> bool:
     try:
-        if conversation_store is None:
-            from app.infrastructure import infra
 
-            conversation_store = infra.get_conversation_store(session_id=session_id)
-
-        if chat_history is None:
-            chat_history = conversation_store.get_last_n_messages(15)
+        chat_history = conversation_store.get_all_messages() if agent_name == "opportunity_intake_advisor_agent" else conversation_store.get_last_n_messages(10)
 
         logger.info(f"session_id:{session_id} chat history: {chat_history}")
 
@@ -66,7 +61,7 @@ def _handle_streaming_response(
             if chunk.content:
                 full_response += chunk.content
                 buffer += chunk.content
-                
+
                 if len(buffer) >= chunk_size:
                     _publish_chunk(
                         chunk=buffer,

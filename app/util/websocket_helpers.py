@@ -38,21 +38,18 @@ async def _validate_user_input(
 
 
 async def _invoke_background_task(
-        user_input: str, session_id: str, result_channel: str
+        user_input: str,
+        session_id: str,
+        result_channel: str
 ) -> bool:
     try:
         from worker.tasks import invoke_unified_stream
         from app.infrastructure import infra
 
-        conversation_store = infra.get_conversation_store(session_id=session_id)
-
-        chat_history = conversation_store.get_all_messages()
-
         invoke_unified_stream.delay(
             user_input=user_input,
             session_id=session_id,
-            result_channel=result_channel,
-            chat_history=chat_history
+            result_channel=result_channel
         )
 
         logger.info(f"WebSocket task initiated for session {session_id}")
@@ -135,16 +132,16 @@ def queue_save_task(
 ) -> str:
     try:
         from worker.tasks import save_chat_history_task
-        
+
         task = save_chat_history_task.delay(
             title=title,
             chat_history=chat_history,
             username=username
         )
-        
+
         task_id = str(task.id)
         logger.info(f"Queued chat history save task: {task_id}")
-        
+
         return task_id
 
     except Exception as e:
