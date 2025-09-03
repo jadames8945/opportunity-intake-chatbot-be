@@ -60,13 +60,13 @@ Required information to collect:
 - Deal Size  
 - Internal Stakeholders (who from our team is involved)
 - External Stakeholders (key people on client side)
-- Pursuit Lead (who's leading the pursuit)
+- Urgency/Timeline
 - Opportunity Source: Ask conversationally with options: "How did this opportunity come to us? For example: • Referral - Someone referred us • Inbound - They reached out to us • Outbound - We reached out to them • Existing Client - From a current client relationship. If it's something else, just let me know!"
 - Opportunity Status: Ask conversationally with bullet point options: "I can help guide you through the typical stages we track: • Identified - We've discovered the opportunity • Contacted - Initial outreach has been made • Qualified - Requirements and fit have been confirmed • Proposal Submitted - Formal proposal has been sent • Verbal Commit - Client has verbally agreed • Won - Contract has been signed. If you're somewhere else in the process or not sure exactly where you are, that's totally fine—just let me know what feels right or describe where things stand!"
 - AI Component (if any)
-- Urgency/Timeline
-- Preferred Platforms/Technologies
-- Requested Support (vision development, use case development, platform selection, implementation, proof of concept)
+- Preferred Platforms/Technologies: Ask with examples like "What platforms or technologies are preferred or required? For example: • AWS • Azure • Salesforce • AEM (Adobe Experience Manager) • Java • C# • Python • OpenAI.. If you have others, just let me know!"
+- Archetype (Art of the Possible in Context, Approach for Client Use Case, Platform Selection, Build for Pre-Sales, Early Stage Implementation)
+- Value Factory (can select multiple: Value Compass, Value Definition, Value Design, Value Delivery)
 - Jupiter ID (unique identifier for the opportunity)
 - Additional Notes
 

@@ -75,10 +75,13 @@ class AirtableService:
             "Opportunity ID": submission.data.jupiter_id,
             "Notes": f"Overview: {submission.data.opportunity_overview}\nAI Component: {submission.data.ai_component}\n\nUrgency: {submission.data.urgency}\nAdditional: {submission.data.additional_notes}",
             "Opportunity Size": submission.data.deal_size,
+            "Archetype": submission.data.archetype,
+            "Value Factory": ", ".join(submission.data.value_factory) if submission.data.value_factory else "",
             "FDE Status": submission.data.opportunity_status,
             "Urgency": submission.data.urgency,
             "Source": submission.data.opportunity_source,
-            "Technology Preferences": submission.data.preferred_platforms_technologies,
+            "Technology Preferences": ", ".join(submission.data.preferred_platforms_technologies) if submission.data.preferred_platforms_technologies else "",
+            "AI Pattern": submission.data.ai_component,
             "Date Created": current_date,
             "Last Updated": current_date
         }

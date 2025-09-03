@@ -8,14 +8,14 @@ class OpportunityIntakeData(BaseModel):
     deal_size: str
     internal_stakeholders: List[str]
     external_stakeholders: List[str]
-    pursuit_lead: str
     opportunity_overview: str
     opportunity_source: str
     opportunity_status: str
     ai_component: str
     urgency: str
     preferred_platforms_technologies: List[str]
-    requested_support: List[str]
+    archetype: str
+    value_factory: Optional[List[str]]
     additional_notes: Optional[str] = ""
 
 

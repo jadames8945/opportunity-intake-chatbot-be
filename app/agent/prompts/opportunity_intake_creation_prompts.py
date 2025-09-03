@@ -37,36 +37,37 @@ Return the response in this exact format:
 ```json
 {{
   "client_name": "",
-  "jupiter_id": "",
   "deal_size": "",
   "internal_stakeholders": [],
   "external_stakeholders": [],
-  "pursuit_lead": "",  
   "opportunity_overview": "",
   "opportunity_source": "",
   "opportunity_status": "",
   "ai_component": "",
   "urgency": "",
   "preferred_platforms_technologies": [],
-  "requested_support": [],
+  "archetype": "",
+  "value_factory": [],
+  "jupiter_id":"",
   "additional_notes": ""
 }}
 ```
 
 Field Descriptions:
-CRITICAL NAME EXTRACTION RULE: When processing names for pursuit_lead, external_stakeholders, or internal_stakeholders, ONLY extract the first name and last name. Do NOT include titles, roles, descriptions, or parenthetical information. Examples: "Tim Juravich (CTO)" → "Tim Juravich", "Jerry Roper (LCSP, primary contact)" → "Jerry Roper", "Sarah Johnson (CTO, decision maker)" → "Sarah Johnson".
+CRITICAL NAME EXTRACTION RULE: When processing names for external_stakeholders or internal_stakeholders, ONLY extract the first name and last name. Do NOT include titles, roles, descriptions, or parenthetical information. Examples: "Tim Juravich (CTO)" → "Tim Juravich", "Jerry Roper (LCSP, primary contact)" → "Jerry Roper", "Sarah Johnson (CTO, decision maker)" → "Sarah Johnson".
 CRITICAL: Use EXACT values provided by the user. Do not add approximation symbols (~), modify formatting, or interpret values. Extract the exact text as provided.
-- jupiter_id: Unique identifier for the opportunity
 - deal_size: Estimated revenue potential from this opportunity - use EXACT value provided by user (e.g., "1 Million", "TBD", "Enterprise") - do not add approximation symbols like ~
+- urgency: Urgency level - ONLY use "High", "Medium", or "Low" 
 - internal_stakeholders: Array of internal team member names (e.g., ["John Smith", "Jane Doe"])
 - external_stakeholders: Array of client-side stakeholder names (e.g., ["Sarah Johnson", "Mike Wilson"])
 - opportunity_source: How the opportunity was sourced (Referral, Inbound, Outbound, Existing Client)
 - opportunity_status: Current status (new, identified, contacted, qualified, proposal submitted, verbal commit, won etc)
-- pursuit_lead: Name of the person leading the pursuit
-- urgency: Urgency level - ONLY use "High", "Medium", or "Low"
 - preferred_platforms_technologies: Preferred or required technologies
-- requested_support: Array of support types needed (Vision Development, Use Case Development, Platform Selection, Implementation Support, Proof of Concept, Training/Support)
+- archetype: Deal archetype (Art of the Possible in Context, Approach for Client Use Case, Platform Selection, Build for Pre-Sales, Early Stage Implementation)
+- value_factory: Array of value factory types (Value Compass, Value Definition, Value Design, Value Delivery)
+- jupiter_id: Unique identifier for the opportunity
 - additional_notes: Any other relevant information or notes
+
 
 IMPORTANT REMINDERS:
 - If the user requests modifications or updates, incorporate those changes AND return the COMPLETE updated JSON
