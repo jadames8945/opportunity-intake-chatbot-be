@@ -4,6 +4,7 @@ from typing import List, Optional
 
 class OpportunityIntakeData(BaseModel):
     client_name: str
+    jupiter_id: Optional[str] = ""
     deal_size: str
     internal_stakeholders: List[str]
     external_stakeholders: List[str]

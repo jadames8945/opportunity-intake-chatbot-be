@@ -37,10 +37,12 @@ Return the response in this exact format:
 ```json
 {{
   "client_name": "",
+  "jupiter_id": "",
   "deal_size": "",
   "internal_stakeholders": [],
   "external_stakeholders": [],
-  "pursuit_lead": "",  "opportunity_overview": "",
+  "pursuit_lead": "",  
+  "opportunity_overview": "",
   "opportunity_source": "",
   "opportunity_status": "",
   "ai_component": "",
@@ -54,6 +56,7 @@ Return the response in this exact format:
 Field Descriptions:
 CRITICAL NAME EXTRACTION RULE: When processing names for pursuit_lead, external_stakeholders, or internal_stakeholders, ONLY extract the first name and last name. Do NOT include titles, roles, descriptions, or parenthetical information. Examples: "Tim Juravich (CTO)" → "Tim Juravich", "Jerry Roper (LCSP, primary contact)" → "Jerry Roper", "Sarah Johnson (CTO, decision maker)" → "Sarah Johnson".
 CRITICAL: Use EXACT values provided by the user. Do not add approximation symbols (~), modify formatting, or interpret values. Extract the exact text as provided.
+- jupiter_id: Unique identifier for the opportunity
 - deal_size: Estimated revenue potential from this opportunity - use EXACT value provided by user (e.g., "1 Million", "TBD", "Enterprise") - do not add approximation symbols like ~
 - internal_stakeholders: Array of internal team member names (e.g., ["John Smith", "Jane Doe"])
 - external_stakeholders: Array of client-side stakeholder names (e.g., ["Sarah Johnson", "Mike Wilson"])

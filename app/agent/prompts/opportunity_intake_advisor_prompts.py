@@ -67,6 +67,7 @@ Required information to collect:
 - Urgency/Timeline
 - Preferred Platforms/Technologies
 - Requested Support (vision development, use case development, platform selection, implementation, proof of concept)
+- Jupiter ID (unique identifier for the opportunity)
 - Additional Notes
 
 IMPORTANT RULES:
