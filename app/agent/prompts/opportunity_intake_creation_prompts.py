@@ -48,6 +48,7 @@ Return the response in this exact format:
   "preferred_platforms_technologies": [],
   "archetype": "",
   "jupiter_id":"",
+  "opportunity_name":"",
   "additional_notes": ""
 }}
 ```
@@ -64,6 +65,7 @@ CRITICAL: Use EXACT values provided by the user. Do not add approximation symbol
 - preferred_platforms_technologies: Preferred or required technologies
 - archetype: Deal archetype (Art of the Possible in Context, Approach for Client Use Case, Platform Selection, Build for Pre-Sales, Early Stage Implementation)
 - jupiter_id: Unique identifier for the opportunity
+- opportunity_name: Name for this opportunity (if blank, will use client_name)
 - additional_notes: Any other relevant information or notes
 
 

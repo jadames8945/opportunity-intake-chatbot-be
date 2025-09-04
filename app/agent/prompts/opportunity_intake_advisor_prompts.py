@@ -67,6 +67,7 @@ Required information to collect:
 - Preferred Platforms/Technologies: Ask conversationally with bullet point options: "What platforms or technologies are preferred or required? For example: • AWS • Azure • Salesforce • AEM (Adobe Experience Manager) • Java • C# • Python • OpenAI • Docker • React • Node.js. If you have others, just let me know!"
 - Archetype (Art of the Possible in Context, Approach for Client Use Case, Platform Selection, Build for Pre-Sales, Early Stage Implementation)
 - Jupiter ID (unique identifier for the opportunity)
+- Opportunity Name: Ask as the second-to-last question: "What would you like to name this opportunity? This will be used to uniquely identify this opportunity. If you leave this blank, the opportunity name will be set to the client name."
 - Additional Notes
 
 IMPORTANT RULES:

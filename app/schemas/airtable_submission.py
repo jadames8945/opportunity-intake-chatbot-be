@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class OpportunityIntakeData(BaseModel):
+    opportunity_name: Optional[str] = None
     client_name: str
     jupiter_id: Optional[str] = ""
     deal_size: str
