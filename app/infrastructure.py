@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class AppInfrastructure:
-    def __init__(self):
+    def __init__(self) -> None:
         self._initialized: bool = False
 
-    def setup(self):
+    def setup(self) -> None:
         if self._initialized:
             return
 
@@ -24,8 +24,8 @@ class AppInfrastructure:
             logger.error(f"Failed to initialize app infrastructure: {e}")
             raise
 
-    def get_conversation_store(self, session_id: str):
-        return get_or_create_conversation_store(session_id)
+    def get_conversation_store(self, session_id: str) -> Dict:
+        return get_or_create_conversation_store(session_id=session_id)
 
     @property
     def redis_client(self):

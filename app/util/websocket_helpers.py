@@ -1,28 +1,30 @@
 import asyncio
 import logging
 import uuid
-from typing import Dict, List
+from typing import Any, Dict, List, Set, Tuple
 
 from common.services.redis_service import listen_and_forward_redis_stream
 
 logger = logging.getLogger(__name__)
 
 
-async def handle_ack(data, redis):
+async def handle_ack(data: Dict[str, Any], redis: Any) -> None:
     stream_id = data.get("stream_id")
     result_channel = data.get("result_channel")
 
     if stream_id and result_channel:
         try:
-            await redis.xack(result_channel, "websocket-consumer-group", stream_id)
+            await redis.xack(
+                name=result_channel, groupname="websocket-consumer-group", id=stream_id
+            )
             logger.info(f"ACKed message {stream_id} on {result_channel}")
         except Exception as e:
             logger.warning(f"Failed to ACK message: {e}")
 
 
 async def _validate_user_input(
-    data: dict, session_id: str, websocket
-) -> tuple[bool, str]:
+    data: Dict[str, Any], session_id: str, websocket: Any
+) -> Tuple[bool, str]:
     user_input = data.get("user_input", "").strip()
 
     if not user_input:
@@ -43,8 +45,6 @@ async def _invoke_background_task(
     try:
         from worker.tasks import invoke_unified_stream
 
-        from app.infrastructure import infra
-
         invoke_unified_stream.delay(
             user_input=user_input, session_id=session_id, result_channel=result_channel
         )
@@ -58,10 +58,10 @@ async def _invoke_background_task(
 
 
 async def _setup_redis_streaming(
-    redis, result_channel: str, websocket, redis_tasks: set
-) -> set:
+    redis: Any, result_channel: str, websocket: Any, redis_tasks: Set
+) -> Set:
     task = asyncio.create_task(
-        listen_and_forward_redis_stream(
+        coro=listen_and_forward_redis_stream(
             redis=redis, result_channel=result_channel, websocket=websocket
         )
     )
@@ -71,12 +71,12 @@ async def _setup_redis_streaming(
 
 
 async def handle_invoke(
-    websocket,
-    data,
-    session_id,
-    redis,
-    redis_tasks,
-):
+    websocket: Any,
+    data: Dict[str, Any],
+    session_id: str,
+    redis: Any,
+    redis_tasks: Set,
+) -> Tuple[str, Set]:
     result_channel = f"invoke_result_{session_id}_{uuid.uuid4().hex}"
 
     is_valid, user_input = await _validate_user_input(
@@ -109,7 +109,10 @@ async def handle_invoke(
     )
 
     redis_tasks = await _setup_redis_streaming(
-        redis, result_channel, websocket, redis_tasks
+        redis=redis,
+        result_channel=result_channel,
+        websocket=websocket,
+        redis_tasks=redis_tasks,
     )
 
     return session_id, redis_tasks

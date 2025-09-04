@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from common.utils.llm_util import invoke_llm_with_string_prompt
 from langchain_core.prompts import ChatPromptTemplate
@@ -50,7 +50,9 @@ class OpportunityIntakeAdvisorAgent:
     def generate_response(
         self, conversation_store: ConversationStore, user_input: str
     ) -> Optional[Dict[str, Any]]:
-        chat_history = conversation_store.get_last_n_messages(n=10)
+        chat_history: List[Dict[str, Any]] = conversation_store.get_last_n_messages(
+            n=10
+        )
 
         try:
             response_content = invoke_llm_with_string_prompt(

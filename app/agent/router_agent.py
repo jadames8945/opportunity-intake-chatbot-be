@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class RouterAgent:
-
-    def __init__(self):
+    def __init__(self) -> None:
         self.prompt = self._build_prompt()
 
     def _build_prompt(self) -> ChatPromptTemplate:
@@ -49,7 +48,9 @@ class RouterAgent:
             ]
         )
 
-    def route_request(self, user_input: str, conversation_store=None) -> str:
+    def route_request(
+        self, user_input: str, conversation_store: Optional[Any] = None
+    ) -> str:
         try:
             chat_history = ""
 
@@ -75,15 +76,15 @@ class RouterAgent:
 
             agent_executor = AgentExecutor(agent=agent, tools=[], verbose=True)
 
-            response: dict[str, Any] = agent_executor.invoke(
-                {"user_input": user_input, "chat_history": chat_history}
+            response: Dict[str, Any] = agent_executor.invoke(
+                input={"user_input": user_input, "chat_history": chat_history}
             )
 
             agent_choice = response.get("output", "OPPORTUNITY_INTAKE_ADVISOR_AGENT")
 
             logger.info(f"Router response: '{response}' -> cleaned: '{agent_choice}'")
 
-            valid_agents = [
+            valid_agents: List[str] = [
                 "OPPORTUNITY_INTAKE_CREATION_AGENT",
                 "OPPORTUNITY_INTAKE_ADVISOR_AGENT",
             ]

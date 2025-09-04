@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import List
 
 from worker.config import worker_app
 
@@ -7,13 +8,17 @@ logger = logging.getLogger(__name__)
 
 
 @worker_app.task(name="save_chat_history_task")
-def save_chat_history_task(title: str, chat_history: list, username: str):
+def save_chat_history_task(title: str, chat_history: List, username: str) -> bool:
     try:
         from app.services.chat_history_service import ChatHistoryService
 
         service = ChatHistoryService()
 
-        success = asyncio.run(service.save_to_mongodb(title, chat_history, username))
+        success = asyncio.run(
+            service.save_to_mongodb(
+                title=title, chat_history=chat_history, username=username
+            )
+        )
 
         if success:
             logger.info(f"Successfully saved chat history: {title}")

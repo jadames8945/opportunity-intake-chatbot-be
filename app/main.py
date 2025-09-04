@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import List
 
 import uvicorn
 from common.configs.app_config import config
@@ -16,7 +17,7 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 logger = logging.getLogger(__name__)
 
 
-def setup_logging():
+def setup_logging() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
@@ -27,7 +28,7 @@ def setup_logging():
     logging.getLogger("langchain_openai").setLevel(logging.ERROR)
 
 
-def setup_infrastructure():
+def setup_infrastructure() -> None:
     try:
         infra.setup()
         logger.info("Infrastructure setup completed successfully")
@@ -36,14 +37,14 @@ def setup_infrastructure():
         raise
 
 
-def setup_middleware(app: FastAPI):
-    app.add_middleware(GZipMiddleware, minimum_size=1000)
+def setup_middleware(app: FastAPI) -> None:
+    app.add_middleware(middleware_class=GZipMiddleware, minimum_size=1000)
 
-    origins = config.allowed_origins()
+    origins: List[str] = config.allowed_origins()
     logger.info(f"Configured CORS origins: {origins}")
 
     app.add_middleware(
-        CORSMiddleware,
+        middleware_class=CORSMiddleware,
         allow_origins=origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
@@ -52,7 +53,7 @@ def setup_middleware(app: FastAPI):
     )
 
 
-def setup_routes(app: FastAPI):
+def setup_routes(app: FastAPI) -> None:
     app.include_router(api_router)
 
 
@@ -67,22 +68,21 @@ def create_app() -> FastAPI:
 
     setup_logging()
     setup_infrastructure()
-    setup_middleware(app)
-    setup_routes(app)
+    setup_middleware(app=app)
+    setup_routes(app=app)
 
     return app
 
 
-def main():
+def main() -> None:
     app = create_app()
     logger.info(f"Starting server on port {config.PORT}")
-    uvicorn.run(app, host="0.0.0.0", port=config.PORT, log_level="info")
+    uvicorn.run(app=app, host="0.0.0.0", port=config.PORT, log_level="info")
 
 
-def get_app():
+def get_app() -> FastAPI:
     return create_app()
 
 
 if __name__ == "__main__":
     main()
-# Test comment

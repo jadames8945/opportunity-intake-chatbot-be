@@ -7,27 +7,25 @@ logger = logging.getLogger(__name__)
 
 
 class MongoInfrastructure:
-    def __init__(self):
-        self._mongo_config: Optional["MongoConfig"] = None
+    def __init__(self) -> None:
+        self._mongo_config: Optional[MongoConfig] = None
         self._initialized: bool = False
 
-    def setup(self):
+    def setup(self) -> None:
         if self._initialized:
             return
 
         try:
             self.setup_mongo()
             self._initialized = True
-            logger.info("Shared infrastructure (Redis) initialized successfully")
+            logger.info("Shared infrastructure (MongoDB) initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize shared infrastructure: {e}")
             raise
 
-    def setup_mongo(self):
+    def setup_mongo(self) -> MongoConfig:
         if self._mongo_config is None:
             try:
-                from common.configs.mongo_config import MongoConfig
-
                 self._mongo_config = MongoConfig()
                 self._mongo_config.setup()
                 logger.info("MongoDB initialized")
@@ -37,7 +35,7 @@ class MongoInfrastructure:
         return self._mongo_config
 
     @property
-    def mongo_config(self):
+    def mongo_config(self) -> MongoConfig:
         if self._mongo_config is None:
             self.setup_mongo()
         return self._mongo_config

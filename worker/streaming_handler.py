@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 from common.redis_infrastructure import infra
 from common.utils.llm_util import format_chat_history_for_prompt
@@ -14,18 +14,17 @@ logger = logging.getLogger(__name__)
 
 def handle_agent_streaming(
     user_input: str,
-    agent_instance,
+    agent_instance: Any,
     agent_name: str,
     result_channel: str,
     session_id: str,
     conversation_store: ConversationStore,
 ) -> bool:
     try:
-
         chat_history = (
             conversation_store.get_all_messages()
             if agent_name == "opportunity_intake_advisor_agent"
-            else conversation_store.get_last_n_messages(10)
+            else conversation_store.get_last_n_messages(n=10)
         )
 
         logger.info(f"session_id:{session_id} chat history: {chat_history}")
@@ -55,21 +54,22 @@ def get_formatted_prompt(
         return prompt.format(
             query=user_input,
             airtable_context=AirtableCache().get_data(),
-            chat_history=format_chat_history_for_prompt(chat_history),
+            chat_history=format_chat_history_for_prompt(chat_history=chat_history),
         )
 
     return prompt.format(
-        query=user_input, chat_history=format_chat_history_for_prompt(chat_history)
+        query=user_input,
+        chat_history=format_chat_history_for_prompt(chat_history=chat_history),
     )
 
 
 def _handle_streaming_response(
     user_input: str,
-    agent_instance,
+    agent_instance: Any,
     agent_name: str,
     result_channel: str,
     session_id: str,
-    conversation_store,
+    conversation_store: ConversationStore,
     chat_history: List[Dict[str, str]],
 ) -> bool:
     try:
@@ -88,7 +88,7 @@ def _handle_streaming_response(
         buffer = ""
         chunk_size = 15
 
-        for chunk in llm.stream(formatted_prompt):
+        for chunk in llm.stream(input=formatted_prompt):
             if chunk.content:
                 full_response += chunk.content
                 buffer += chunk.content
@@ -138,7 +138,11 @@ def _handle_streaming_response(
 
 
 def _publish_chunk(
-    chunk: str, channel: str, agent_name: str, progress: str, final_result: dict = None
+    chunk: str,
+    channel: str,
+    agent_name: str,
+    progress: str,
+    final_result: Optional[Dict] = None,
 ) -> bool:
     redis_client = infra.redis_client
 
@@ -147,5 +151,5 @@ def _publish_chunk(
     if final_result:
         message.update(final_result)
 
-    redis_client.xadd(channel, message, maxlen=1000, approximate=True)
+    redis_client.xadd(name=channel, fields=message, maxlen=1000, approximate=True)
     return True

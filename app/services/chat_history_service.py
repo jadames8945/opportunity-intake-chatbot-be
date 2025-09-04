@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class ChatHistoryService:
-    def __init__(self):
+    def __init__(self) -> None:
         self.agent = ChatHistoryAgent()
         self.repository = ChatHistoryRepository()
 
@@ -18,8 +18,8 @@ class ChatHistoryService:
         logger.info(f"Getting chat history for session: {session_id}")
 
         try:
-            conversation_store = get_or_create_conversation_store(session_id)
-            messages = conversation_store.get_last_n_messages(10)
+            conversation_store = get_or_create_conversation_store(session_id=session_id)
+            messages = conversation_store.get_last_n_messages(n=10)
             logger.info(f"Retrieved {len(messages)} messages for session {session_id}")
             return messages
         except Exception as e:
@@ -27,12 +27,14 @@ class ChatHistoryService:
             return []
 
     def generate_title_stream(self, chat_history: List[Dict[str, str]]):
-        return self.agent.get_chat_history_title_stream(chat_history)
+        return self.agent.get_chat_history_title_stream(chat_history=chat_history)
 
     async def save_to_mongodb(
         self, title: str, chat_history: List[Dict[str, str]], username: str
     ) -> bool:
-        return await self.repository.save_chat_history(title, chat_history, username)
+        return await self.repository.save_chat_history(
+            title=title, chat_history=chat_history, username=username
+        )
 
     async def load_chat_history_into_store(
         self, session_id: str, messages: List[Dict[str, Any]]
@@ -41,19 +43,21 @@ class ChatHistoryService:
             f"Loading chat history into conversion store {session_id}, messages: {messages}"
         )
 
-        conversation_store = get_or_create_conversation_store(session_id)
+        conversation_store = get_or_create_conversation_store(session_id=session_id)
 
         conversation_store.clear_history()
 
-        conversation_store.set_messages(messages)
+        conversation_store.set_messages(messages=messages)
 
         return messages
 
-    async def get_all_chat_histories(self, username: str) -> List[Dict[str, any]]:
-        return await self.repository.get_all_chat_histories(username)
+    async def get_all_chat_histories(self, username: str) -> List[Dict[str, Any]]:
+        return await self.repository.get_all_chat_histories(username=username)
 
-    async def delete_chat_history(self, request: ChatHistoryRequest) -> Dict[str, any]:
-        conversation_store = get_or_create_conversation_store(request.session_id)
+    async def delete_chat_history(self, request: ChatHistoryRequest) -> Dict[str, Any]:
+        conversation_store = get_or_create_conversation_store(
+            session_id=request.session_id
+        )
         conversation_store.clear_history()
 
         return await self.repository.delete_chat_history(

@@ -7,11 +7,11 @@ logger = logging.getLogger(__name__)
 
 
 class RedisInfrastructure:
-    def __init__(self):
+    def __init__(self) -> None:
         self._redis_client: Optional[RedisSync] = None
         self._initialized: bool = False
 
-    def setup(self):
+    def setup(self) -> None:
         if self._initialized:
             return
 

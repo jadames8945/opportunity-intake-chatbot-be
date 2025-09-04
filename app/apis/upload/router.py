@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-def get_upload_service():
+def get_upload_service() -> UploadService:
     return UploadService()
 
 
@@ -23,16 +23,13 @@ async def upload_document(
     user_context: str = Form("Create a PRD based on this document"),
     upload_service: UploadService = Depends(get_upload_service),
 ) -> Dict[str, Any]:
-    """
-    Upload a document and generate PRD based on its content.
-    """
     try:
         logger.info(f"Processing uploaded document: {file.filename}")
 
         content = await file.read()
 
         result = upload_service.process_document_upload(
-            content, file.filename, user_context
+            file_content=content, filename=file.filename, user_context=user_context
         )
 
         if result:

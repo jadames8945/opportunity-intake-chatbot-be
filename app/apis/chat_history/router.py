@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends
 
@@ -24,8 +24,8 @@ def get_chat_history_service() -> ChatHistoryService:
 async def load_chat_history_on_login(
     username: str,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
-):
-    return await chat_history_service.get_all_chat_histories(username)
+) -> List[Dict[str, Any]]:
+    return await chat_history_service.get_all_chat_histories(username=username)
 
 
 @router.post("/load")
@@ -42,7 +42,7 @@ async def load_chat_history(
         or request.chat_title is None
         or request.username is None
     ):
-        raise Exception(f"session_id, chat_title, or username cannot be None")
+        raise Exception("session_id, chat_title, or username cannot be None")
 
     return await chat_history_service.load_chat_history_into_store(
         session_id=request.session_id, messages=request.messages
@@ -53,11 +53,11 @@ async def load_chat_history(
 async def delete_chat_history(
     request: ChatHistoryRequest,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     if not request.session_id or not request.chat_title or not request.username:
         raise Exception("session_id, chat_title, or username cannot be None")
 
-    return await chat_history_service.delete_chat_history(request)
+    return await chat_history_service.delete_chat_history(request=request)
 
 
 @router.post("/save")
@@ -79,7 +79,7 @@ async def save_chat_history(
         f"Saving chat history for session {session_id} with {len(messages)} messages"
     )
 
-    stream = chat_history_service.generate_title_stream(messages)
+    stream = chat_history_service.generate_title_stream(chat_history=messages)
 
     if not stream:
         raise Exception("Failed to generate title")

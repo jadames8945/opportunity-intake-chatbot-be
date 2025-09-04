@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from app.agent.opportunity_intake_advisor_agent import OpportunityIntakeAdvisorAgent
 from app.agent.opportunity_intake_creation_agent import OpportunityIntakeCreationAgent
@@ -10,17 +10,21 @@ logger = logging.getLogger(__name__)
 
 
 class UnifiedService:
-    def __init__(self):
+    def __init__(self) -> None:
         self.router_agent = RouterAgent()
         self.opportunity_intake_advisor_agent = OpportunityIntakeAdvisorAgent()
         self.opportunity_intake_creation_agent = OpportunityIntakeCreationAgent()
 
-    def handle_request(self, user_input: str, conversation_store: ConversationStore):
+    def handle_request(
+        self, user_input: str, conversation_store: ConversationStore
+    ) -> Tuple[
+        Union[OpportunityIntakeCreationAgent, OpportunityIntakeAdvisorAgent], str
+    ]:
         logger.info(f"Handling request: {user_input}")
 
         try:
             agent_choice = self.router_agent.route_request(
-                user_input, conversation_store
+                user_input=user_input, conversation_store=conversation_store
             )
 
             logger.info(f"Router chose: {agent_choice}")
@@ -39,10 +43,12 @@ class UnifiedService:
 
         except Exception as e:
             logger.error(f"Request handling failed: {e}")
-            return self._handle_opportunity_intake_advisor_request(user_input)
+            return self._handle_opportunity_intake_advisor_request(
+                user_input=user_input
+            )
 
     def _handle_opportunity_intake_advisor_request(
         self, user_input: str
-    ) -> OpportunityIntakeAdvisorAgent:
+    ) -> Tuple[OpportunityIntakeAdvisorAgent, str]:
         logger.info("Handling opportunity intake advisor request")
-        return OpportunityIntakeAdvisorAgent()
+        return (OpportunityIntakeAdvisorAgent(), "opportunity_intake_advisor_agent")

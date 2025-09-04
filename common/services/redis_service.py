@@ -1,23 +1,22 @@
 import json
 import logging
 import os
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator, Dict
 
 from fastapi import WebSocket
 from redis import Redis as RedisSync
 from redis.asyncio import Redis
 
-
-def get_redis_url():
-    return os.getenv("REDIS_SERVER")
-
-
 logger = logging.getLogger(__name__)
+
+
+def get_redis_url() -> str:
+    return os.getenv("REDIS_SERVER")
 
 
 def get_sync_redis_client() -> RedisSync:
     return RedisSync.from_url(
-        get_redis_url(),
+        url=get_redis_url(),
         decode_responses=True,
         max_connections=20,
         retry_on_timeout=True,
@@ -28,8 +27,7 @@ def get_sync_redis_client() -> RedisSync:
 
 
 async def get_redis_client() -> AsyncGenerator[Redis, None]:
-    """Get async Redis client - creates new connection for each request."""
-    client = Redis.from_url(get_redis_url(), decode_responses=True)
+    client = Redis.from_url(url=get_redis_url(), decode_responses=True)
     try:
         yield client
     finally:
@@ -38,11 +36,13 @@ async def get_redis_client() -> AsyncGenerator[Redis, None]:
 
 async def listen_and_forward_redis_stream(
     redis: Redis, result_channel: str, websocket: WebSocket
-):
+) -> None:
     last_id = "0-0"
     try:
         while True:
-            response = await redis.xread({result_channel: last_id}, block=100, count=10)
+            response = await redis.xread(
+                streams={result_channel: last_id}, block=100, count=10
+            )
             if response:
                 stream, messages = response[0]
                 for msg_id, msg in messages:
@@ -57,7 +57,7 @@ async def listen_and_forward_redis_stream(
 
                     if "result" in payload:
                         try:
-                            payload["result"] = json.loads(payload["result"])
+                            payload["result"] = json.loads(s=payload["result"])
                         except Exception:
                             pass
                     await websocket.send_json(payload)

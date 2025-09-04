@@ -1,7 +1,8 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 
 from app.agent.prompts.opportunity_intake_creation_prompts import (
     OPPORTUNITY_INTAKE_CAPABILITIES,
@@ -47,7 +48,9 @@ class OpportunityIntakeCreationAgent:
     def generate_response(
         self, conversation_store: ConversationStore, user_input: str
     ) -> Optional[Dict[str, Any]]:
-        chat_history = conversation_store.get_last_n_messages(n=10)
+        chat_history: List[Dict[str, Any]] = conversation_store.get_last_n_messages(
+            n=10
+        )
 
         try:
             formatted_prompt = self.prompt.format(
@@ -55,10 +58,8 @@ class OpportunityIntakeCreationAgent:
                 chat_history=chat_history,
             )
 
-            from langchain_openai import ChatOpenAI
-
             llm = ChatOpenAI(model="gpt-4o-mini", streaming=False)
-            response = llm.invoke(formatted_prompt)
+            response = llm.invoke(input=formatted_prompt)
 
             if response.content:
                 conversation_store.add_conversation_turn(

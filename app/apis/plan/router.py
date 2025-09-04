@@ -1,6 +1,7 @@
 import json
 import logging
 import uuid
+from typing import Set
 
 from common.services.redis_service import get_redis_client
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
@@ -17,7 +18,7 @@ router = APIRouter(
 )
 
 
-def get_unified_service():
+def get_unified_service() -> UnifiedService:
     return UnifiedService()
 
 
@@ -27,17 +28,17 @@ async def websocket_endpoint(
 ) -> None:
     await websocket.accept()
     session_id = str(uuid.uuid4())
-    redis_tasks = set()
+    redis_tasks: Set = set()
 
     await websocket.send_json({"type": "session_established", "session_id": session_id})
 
     try:
         while True:
             data = await websocket.receive_text()
-            data = json.loads(data)
+            data = json.loads(s=data)
 
             if data.get("type") == "ack":
-                await handle_ack(data, redis)
+                await handle_ack(data=data, redis=redis)
                 continue
 
             session_id, redis_tasks = await handle_invoke(
