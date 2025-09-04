@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 from app.infrastructure import infra
 from app.models.chat_history import ChatHistory
@@ -13,13 +13,15 @@ class ChatHistoryRepository:
         self.db = infra.mongo_client.get_database_connection()
         self.collection = self.db.chat_histories
 
-    async def save_chat_history(self, title: str, chat_history: List[Dict[str, str]], username: str) -> bool:
+    async def save_chat_history(
+        self, title: str, chat_history: List[Dict[str, str]], username: str
+    ) -> bool:
         try:
             document = {
                 "username": username,
                 "title": title,
                 "chat_history": chat_history,
-                "created_at": datetime.utcnow()
+                "created_at": datetime.utcnow(),
             }
 
             result = await self.collection.insert_one(document)
@@ -30,9 +32,13 @@ class ChatHistoryRepository:
             logger.error(f"Failed to save chat history: {e}")
             return False
 
-    async def get_chat_history_by_title(self, title: str, username: str) -> ChatHistory | None:
+    async def get_chat_history_by_title(
+        self, title: str, username: str
+    ) -> ChatHistory | None:
         try:
-            result: Dict = await self.collection.find_one({"username": username, "title": title})
+            result: Dict = await self.collection.find_one(
+                {"username": username, "title": title}
+            )
 
             return ChatHistory(**result)
 
@@ -42,9 +48,7 @@ class ChatHistoryRepository:
 
     async def get_all_chat_histories(self, username: str) -> List[Dict]:
         try:
-            cursor = (self.collection
-                      .find({"username": username})
-                      .sort("created_at", -1))
+            cursor = self.collection.find({"username": username}).sort("created_at", -1)
 
             chat_histories = []
 

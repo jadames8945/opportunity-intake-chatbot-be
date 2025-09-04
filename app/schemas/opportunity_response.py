@@ -1,4 +1,5 @@
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel
 
 
@@ -18,4 +19,4 @@ class OpportunityResponse(BaseModel):
             result=opportunity_content,
         )
 
-        return opportunity_response.model_dump(mode="json") 
+        return opportunity_response.model_dump(mode="json")

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import uuid
-from typing import List, Dict
+from typing import Dict, List
 
 from common.services.redis_service import listen_and_forward_redis_stream
 
@@ -21,7 +21,7 @@ async def handle_ack(data, redis):
 
 
 async def _validate_user_input(
-        data: dict, session_id: str, websocket
+    data: dict, session_id: str, websocket
 ) -> tuple[bool, str]:
     user_input = data.get("user_input", "").strip()
 
@@ -38,18 +38,15 @@ async def _validate_user_input(
 
 
 async def _invoke_background_task(
-        user_input: str,
-        session_id: str,
-        result_channel: str
+    user_input: str, session_id: str, result_channel: str
 ) -> bool:
     try:
         from worker.tasks import invoke_unified_stream
+
         from app.infrastructure import infra
 
         invoke_unified_stream.delay(
-            user_input=user_input,
-            session_id=session_id,
-            result_channel=result_channel
+            user_input=user_input, session_id=session_id, result_channel=result_channel
         )
 
         logger.info(f"WebSocket task initiated for session {session_id}")
@@ -61,7 +58,7 @@ async def _invoke_background_task(
 
 
 async def _setup_redis_streaming(
-        redis, result_channel: str, websocket, redis_tasks: set
+    redis, result_channel: str, websocket, redis_tasks: set
 ) -> set:
     task = asyncio.create_task(
         listen_and_forward_redis_stream(
@@ -74,27 +71,23 @@ async def _setup_redis_streaming(
 
 
 async def handle_invoke(
-        websocket,
-        data,
-        session_id,
-        redis,
-        redis_tasks,
+    websocket,
+    data,
+    session_id,
+    redis,
+    redis_tasks,
 ):
     result_channel = f"invoke_result_{session_id}_{uuid.uuid4().hex}"
 
     is_valid, user_input = await _validate_user_input(
-        data=data,
-        session_id=session_id,
-        websocket=websocket
+        data=data, session_id=session_id, websocket=websocket
     )
 
     if not is_valid:
         return session_id, redis_tasks
 
     task_success = await _invoke_background_task(
-        user_input=user_input,
-        session_id=session_id,
-        result_channel=result_channel
+        user_input=user_input, session_id=session_id, result_channel=result_channel
     )
 
     if not task_success:
@@ -116,27 +109,20 @@ async def handle_invoke(
     )
 
     redis_tasks = await _setup_redis_streaming(
-        redis,
-        result_channel,
-        websocket,
-        redis_tasks
+        redis, result_channel, websocket, redis_tasks
     )
 
     return session_id, redis_tasks
 
 
 def queue_save_task(
-        title: str,
-        chat_history: List[Dict[str, str]],
-        username: str
+    title: str, chat_history: List[Dict[str, str]], username: str
 ) -> str:
     try:
         from worker.tasks import save_chat_history_task
 
         task = save_chat_history_task.delay(
-            title=title,
-            chat_history=chat_history,
-            username=username
+            title=title, chat_history=chat_history, username=username
         )
 
         task_id = str(task.id)

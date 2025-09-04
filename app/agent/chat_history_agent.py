@@ -1,11 +1,11 @@
 import logging
-from typing import List, Dict
+from typing import Dict, List
 
+from common.utils.llm_util import format_chat_history_for_prompt
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
 from app.agent.prompts.chat_history_prompts import CHAT_HISTORY_ROLE, RESPONSE_FORMAT
-from common.utils.llm_util import format_chat_history_for_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +38,10 @@ class ChatHistoryAgent:
         try:
             formatted_prompt = self.prompt.format(
                 query="Generate a concise title for this conversation",
-                chat_history=format_chat_history_for_prompt(chat_history)
+                chat_history=format_chat_history_for_prompt(chat_history),
             )
 
-            llm = ChatOpenAI(
-                model="gpt-4o-mini",
-                streaming=True
-            )
+            llm = ChatOpenAI(model="gpt-4o-mini", streaming=True)
 
             return llm.stream(formatted_prompt)
 

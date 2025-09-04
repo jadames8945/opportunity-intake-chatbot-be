@@ -25,14 +25,13 @@ class AuthService:
 
         return user
 
-    async def register_user(
-            self,
-            user: User
-    ) -> User:
+    async def register_user(self, user: User) -> User:
         logger.info(f"Attempting to register user: {user.username}")
 
         try:
-            existing_user = await self.auth_repository.get_user_by_username(user.username)
+            existing_user = await self.auth_repository.get_user_by_username(
+                user.username
+            )
 
             if existing_user:
                 raise ValueError("Username already exists")
@@ -53,14 +52,18 @@ class AuthService:
 
     async def login_user(self, credentials: UserCredentials) -> Token:
         try:
-            user = await self.authenticate_user(credentials.username, credentials.password)
+            user = await self.authenticate_user(
+                credentials.username, credentials.password
+            )
 
             if not user:
                 raise ValueError("Invalid username or password")
 
             logger.info(f"Creating token for user: {user.username}")
 
-            access_token = self.token_service.create_access_token(data={"username": user.username})
+            access_token = self.token_service.create_access_token(
+                data={"username": user.username}
+            )
 
             logger.info("Token created successfully")
 

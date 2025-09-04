@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -41,9 +41,9 @@ def invoke_llm_with_prompt(
         )
 
         llm = ChatOpenAI(
-            model=model, 
+            model=model,
             streaming=streaming,
-            model_kwargs={"response_format": {"type": "json_object"}}
+            model_kwargs={"response_format": {"type": "json_object"}},
         )
 
         response = llm.invoke(formatted_prompt)
@@ -88,10 +88,7 @@ def invoke_llm_with_string_prompt(
             **kwargs,
         )
 
-        llm = ChatOpenAI(
-            model=model, 
-            streaming=streaming
-        )
+        llm = ChatOpenAI(model=model, streaming=streaming)
 
         response = llm.invoke(formatted_prompt)
         return response.content

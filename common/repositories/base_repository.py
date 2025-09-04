@@ -1,7 +1,7 @@
 """Base repository for database operations."""
 
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Optional, List, Any
+from typing import Any, Generic, List, Optional, TypeVar
 
 T = TypeVar("T")
 

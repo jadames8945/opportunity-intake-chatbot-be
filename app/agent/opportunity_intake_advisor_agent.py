@@ -1,17 +1,17 @@
 import logging
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
+from common.utils.llm_util import invoke_llm_with_string_prompt
 from langchain_core.prompts import ChatPromptTemplate
 
 from app.agent.prompts.opportunity_intake_advisor_prompts import (
-    CHAT_ROLE,
     CHAT_CAPABILITIES,
     CHAT_GUIDELINES,
+    CHAT_ROLE,
     RESPONSE_FORMAT,
 )
 from app.config.conversation_store import ConversationStore
 from app.schemas.opportunity_response import OpportunityResponse
-from common.utils.llm_util import invoke_llm_with_string_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +48,7 @@ class OpportunityIntakeAdvisorAgent:
         )
 
     def generate_response(
-            self,
-            conversation_store: ConversationStore,
-            user_input: str
+        self, conversation_store: ConversationStore, user_input: str
     ) -> Optional[Dict[str, Any]]:
         chat_history = conversation_store.get_last_n_messages(n=10)
 
@@ -63,8 +61,7 @@ class OpportunityIntakeAdvisorAgent:
 
             if response_content:
                 conversation_store.add_conversation_turn(
-                    user_input=user_input,
-                    assistant_response=response_content
+                    user_input=user_input, assistant_response=response_content
                 )
 
                 return OpportunityResponse.build_opportunity_result(
@@ -75,16 +72,16 @@ class OpportunityIntakeAdvisorAgent:
                 raise Exception("Opportunity intake advisor agent returned no response")
 
         except Exception as e:
-            logger.warning(f"Opportunity intake advisor agent failed, using fallback: {e}")
+            logger.warning(
+                f"Opportunity intake advisor agent failed, using fallback: {e}"
+            )
             return self._build_fallback_response(
                 user_input=user_input,
-                content={"error": "Chat failed. Please try again."}
+                content={"error": "Chat failed. Please try again."},
             )
 
     def _build_fallback_response(
-            self,
-            user_input: str,
-            content: Dict[str, Any]
+        self, user_input: str, content: Dict[str, Any]
     ) -> Dict[str, Any]:
         return OpportunityResponse.build_opportunity_result(
             user_input=user_input,

@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
 
 
 class OpportunityIntakeData(BaseModel):
@@ -27,4 +28,4 @@ class AirtableSubmissionRequest(BaseModel):
 class AirtableSubmissionResponse(BaseModel):
     success: bool
     message: str
-    record_id: Optional[str] = None 
+    record_id: Optional[str] = None

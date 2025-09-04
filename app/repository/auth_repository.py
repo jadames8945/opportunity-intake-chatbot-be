@@ -1,10 +1,11 @@
 import logging
-from typing import Optional, List, Any
-from bson import ObjectId
+from typing import Any, List, Optional
 
-from app.schemas.user import User
+from bson import ObjectId
 from common.mongo_infrastructure import infra
 from common.repositories.base_repository import BaseRepository
+
+from app.schemas.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +57,11 @@ class AuthRepository(BaseRepository[User]):
             user_dict = entity.model_dump()
 
             result = await self.collection.update_one(
-                {"_id": entity_id},
-                {"$set": user_dict}
+                {"_id": entity_id}, {"$set": user_dict}
             )
-            return await self.find_by_id(entity_id) if result.modified_count > 0 else None
+            return (
+                await self.find_by_id(entity_id) if result.modified_count > 0 else None
+            )
         except Exception as e:
             logger.error(f"Error updating user: {e}")
             raise
@@ -82,7 +84,7 @@ class AuthRepository(BaseRepository[User]):
             result = await self.collection.insert_one(user_dict)
 
             user_dict["id"] = str(result.inserted_id)
-            return User(**user_dict)   
+            return User(**user_dict)
         except Exception as e:
             logger.error(f"Error creating user: {e}")
             raise

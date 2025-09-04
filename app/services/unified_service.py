@@ -1,11 +1,10 @@
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 from app.agent.opportunity_intake_advisor_agent import OpportunityIntakeAdvisorAgent
 from app.agent.opportunity_intake_creation_agent import OpportunityIntakeCreationAgent
 from app.agent.router_agent import RouterAgent
 from app.config.conversation_store import ConversationStore
-
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +27,22 @@ class UnifiedService:
 
             match agent_choice:
                 case "OPPORTUNITY_INTAKE_CREATION_AGENT":
-                    return OpportunityIntakeCreationAgent(), "opportunity_intake_creation_agent"
+                    return (
+                        OpportunityIntakeCreationAgent(),
+                        "opportunity_intake_creation_agent",
+                    )
                 case _:
-                    return OpportunityIntakeAdvisorAgent(), "opportunity_intake_advisor_agent"
+                    return (
+                        OpportunityIntakeAdvisorAgent(),
+                        "opportunity_intake_advisor_agent",
+                    )
 
         except Exception as e:
             logger.error(f"Request handling failed: {e}")
             return self._handle_opportunity_intake_advisor_request(user_input)
 
-    def _handle_opportunity_intake_advisor_request(self, user_input: str) -> OpportunityIntakeAdvisorAgent:
+    def _handle_opportunity_intake_advisor_request(
+        self, user_input: str
+    ) -> OpportunityIntakeAdvisorAgent:
         logger.info("Handling opportunity intake advisor request")
         return OpportunityIntakeAdvisorAgent()

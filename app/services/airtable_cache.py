@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 from common.redis_infrastructure import infra
 

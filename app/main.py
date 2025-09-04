@@ -2,15 +2,14 @@ import logging
 from pathlib import Path
 
 import uvicorn
+from common.configs.app_config import config
+from common.redis_infrastructure import infra
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from dotenv import load_dotenv
 
 from app.apis.api_router import api_router
-from common.configs.app_config import config
-from common.redis_infrastructure import infra
-
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
@@ -86,3 +85,4 @@ def get_app():
 
 if __name__ == "__main__":
     main()
+# Test comment

@@ -26,4 +26,3 @@ def check_credentials(username: str, password: str):
     if len(password) < 8:
         raise InvalidCredentialsException("Password must be at least 8 characters long")
     return True
-

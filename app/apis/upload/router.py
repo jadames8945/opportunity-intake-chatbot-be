@@ -1,7 +1,7 @@
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from app.services.upload_service import UploadService
 

@@ -1,4 +1,5 @@
 import logging
+
 from starlette.websockets import WebSocket
 
 logger = logging.getLogger(__name__)
@@ -10,13 +11,17 @@ class ConnectionManager:
 
     async def connect(self, websocket: WebSocket, session_id: str):
         if session_id in self.active_connections:
-            logger.warning(f"Session {session_id} already has an active connection, closing old one")
+            logger.warning(
+                f"Session {session_id} already has an active connection, closing old one"
+            )
             try:
                 old_websocket = self.active_connections[session_id]
                 await old_websocket.close(code=1000, reason="New connection")
             except Exception as e:
-                logger.error(f"Error closing old connection for session {session_id}: {e}")
-        
+                logger.error(
+                    f"Error closing old connection for session {session_id}: {e}"
+                )
+
         await websocket.accept()
         self.active_connections[session_id] = websocket
         logger.info(f"New WebSocket connection established for session: {session_id}")

@@ -6,6 +6,7 @@ Test script for the Opportunity Intake Advisor Agent
 import os
 import sys
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -20,7 +21,9 @@ def test_opportunity_intake_advisor_agent():
     print("=" * 40)
 
     try:
-        from app.agent.opportunity_intake_advisor_agent import OpportunityIntakeAdvisorAgent
+        from app.agent.opportunity_intake_advisor_agent import (
+            OpportunityIntakeAdvisorAgent,
+        )
 
         print("✅ Successfully imported Opportunity Intake Advisor agent")
 
@@ -41,4 +44,4 @@ def test_opportunity_intake_advisor_agent():
 
 
 if __name__ == "__main__":
-    test_opportunity_intake_advisor_agent() 
+    test_opportunity_intake_advisor_agent()

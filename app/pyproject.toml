@@ -30,6 +30,55 @@ pytz = "^2024.1"
 pyairtable = "^3.2.0"
 
 
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pre-commit = "^4.3.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503", "E501", "W293", "W291", "F841", "F541", "F401", "E402"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    ".eggs",
+    "*.egg",
+]
+
+[tool.poetry.scripts]
+format = "scripts.format:main"

@@ -1,8 +1,11 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
-from app.schemas.airtable_submission import AirtableSubmissionRequest, AirtableSubmissionResponse
+from app.schemas.airtable_submission import (
+    AirtableSubmissionRequest,
+    AirtableSubmissionResponse,
+)
 from app.services.airtable_service import AirtableService
 
 logger = logging.getLogger(__name__)
@@ -19,17 +22,15 @@ def get_airtable_service():
 
 @router.post("/submit", response_model=AirtableSubmissionResponse)
 async def submit_opportunity_intake(
-        submission: AirtableSubmissionRequest,
-        airtable_service: AirtableService = Depends(get_airtable_service)
+    submission: AirtableSubmissionRequest,
+    airtable_service: AirtableService = Depends(get_airtable_service),
 ):
     try:
         result = await airtable_service.submit_opportunity_intake(submission)
 
         if result["success"]:
             return AirtableSubmissionResponse(
-                success=True,
-                message=result["message"],
-                record_id=result["record_id"]
+                success=True, message=result["message"], record_id=result["record_id"]
             )
         else:
             raise HTTPException(status_code=400, detail=result["message"])
@@ -41,12 +42,16 @@ async def submit_opportunity_intake(
 
 @router.post("/load-cache")
 async def load_airtable_cache(
-        airtable_service: AirtableService = Depends(get_airtable_service)
+    airtable_service: AirtableService = Depends(get_airtable_service),
 ):
     try:
         data = await airtable_service.load_all_data_from_airtable()
 
-        total_records = len(data["clients"]) + len(data["stakeholders"]) + len(data["opportunities"])
+        total_records = (
+            len(data["clients"])
+            + len(data["stakeholders"])
+            + len(data["opportunities"])
+        )
 
         return {
             "success": True,
@@ -54,8 +59,8 @@ async def load_airtable_cache(
             "data": {
                 "clients_count": len(data["clients"]),
                 "stakeholders_count": len(data["stakeholders"]),
-                "opportunities_count": len(data["opportunities"])
-            }
+                "opportunities_count": len(data["opportunities"]),
+            },
         }
 
     except Exception as e:

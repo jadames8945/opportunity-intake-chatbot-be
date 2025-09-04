@@ -1,5 +1,5 @@
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from app.agent.chat_history_agent import ChatHistoryAgent
 from app.config.conversation_store import get_or_create_conversation_store
@@ -29,14 +29,17 @@ class ChatHistoryService:
     def generate_title_stream(self, chat_history: List[Dict[str, str]]):
         return self.agent.get_chat_history_title_stream(chat_history)
 
-    async def save_to_mongodb(self, title: str, chat_history: List[Dict[str, str]], username: str) -> bool:
+    async def save_to_mongodb(
+        self, title: str, chat_history: List[Dict[str, str]], username: str
+    ) -> bool:
         return await self.repository.save_chat_history(title, chat_history, username)
 
     async def load_chat_history_into_store(
-            self,
-            session_id: str, messages: List[Dict[str, Any]]
+        self, session_id: str, messages: List[Dict[str, Any]]
     ) -> List[Dict[str, str]]:
-        logger.info(f"Loading chat history into conversion store {session_id}, messages: {messages}")
+        logger.info(
+            f"Loading chat history into conversion store {session_id}, messages: {messages}"
+        )
 
         conversation_store = get_or_create_conversation_store(session_id)
 
@@ -53,4 +56,6 @@ class ChatHistoryService:
         conversation_store = get_or_create_conversation_store(request.session_id)
         conversation_store.clear_history()
 
-        return await self.repository.delete_chat_history(title=request.chat_title, username=request.username)
+        return await self.repository.delete_chat_history(
+            title=request.chat_title, username=request.username
+        )

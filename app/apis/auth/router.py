@@ -2,7 +2,11 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.exceptions.user_exceptions import check_credentials, MissingCredentialsException, UserException
+from app.exceptions.user_exceptions import (
+    MissingCredentialsException,
+    UserException,
+    check_credentials,
+)
 from app.schemas.user import User, UserCredentials
 from app.services.auth_service import AuthService
 
@@ -20,8 +24,7 @@ def get_auth_service():
 
 @auth_router.post("/register", response_model=User)
 async def register_user(
-        user: User,
-        auth_service: AuthService = Depends(get_auth_service)
+    user: User, auth_service: AuthService = Depends(get_auth_service)
 ) -> User:
     try:
         check_credentials(user.username, user.password)
@@ -41,12 +44,14 @@ async def register_user(
 
 @auth_router.post("/login", response_model=User)
 async def login_user(
-        user_credentials: UserCredentials,
-        auth_service: AuthService = Depends(get_auth_service)
+    user_credentials: UserCredentials,
+    auth_service: AuthService = Depends(get_auth_service),
 ) -> User:
     try:
         check_credentials(user_credentials.username, user_credentials.password)
-        result = await auth_service.authenticate_user(user_credentials.username, user_credentials.password)
+        result = await auth_service.authenticate_user(
+            user_credentials.username, user_credentials.password
+        )
         logger.info(f"Logged in user {result}")
         return result
     except MissingCredentialsException as e:

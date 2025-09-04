@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def convert_contexts_to_base_messages(retrieved_contexts, default_role="user"):

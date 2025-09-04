@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends
 
@@ -22,32 +22,37 @@ def get_chat_history_service() -> ChatHistoryService:
 
 @router.get("")
 async def load_chat_history_on_login(
-        username: str,
-        chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
+    username: str,
+    chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ):
     return await chat_history_service.get_all_chat_histories(username)
 
 
 @router.post("/load")
 async def load_chat_history(
-        request: ChatHistoryRequest,
-        chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
+    request: ChatHistoryRequest,
+    chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> List[Dict[str, str]]:
-    logger.info(f"Received load request: session_id={request.session_id}, chat_title={request.chat_title}")
+    logger.info(
+        f"Received load request: session_id={request.session_id}, chat_title={request.chat_title}"
+    )
 
-    if request.session_id is None or request.chat_title is None or request.username is None:
+    if (
+        request.session_id is None
+        or request.chat_title is None
+        or request.username is None
+    ):
         raise Exception(f"session_id, chat_title, or username cannot be None")
 
     return await chat_history_service.load_chat_history_into_store(
-        session_id=request.session_id,
-        messages=request.messages
+        session_id=request.session_id, messages=request.messages
     )
 
 
 @router.delete("/delete")
 async def delete_chat_history(
-        request: ChatHistoryRequest,
-        chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
+    request: ChatHistoryRequest,
+    chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, str]:
     if not request.session_id or not request.chat_title or not request.username:
         raise Exception("session_id, chat_title, or username cannot be None")
@@ -57,12 +62,12 @@ async def delete_chat_history(
 
 @router.post("/save")
 async def save_chat_history(
-        request: ChatHistoryRequest,
-        chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
+    request: ChatHistoryRequest,
+    chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, str]:
     session_id = request.session_id
     username = request.username
-    messages = request.messages if hasattr(request, 'messages') else []
+    messages = request.messages if hasattr(request, "messages") else []
 
     if not session_id or not username:
         raise Exception("session_id and username cannot be None")
@@ -70,7 +75,9 @@ async def save_chat_history(
     if not messages:
         raise Exception("No messages provided")
 
-    logger.info(f"Saving chat history for session {session_id} with {len(messages)} messages")
+    logger.info(
+        f"Saving chat history for session {session_id} with {len(messages)} messages"
+    )
 
     stream = chat_history_service.generate_title_stream(messages)
 
@@ -85,6 +92,13 @@ async def save_chat_history(
     clean_title = title.strip().strip('"').strip("'")
     current_time = datetime.utcnow()
 
-    task_id = queue_save_task(title=clean_title, chat_history=messages, username=username)
+    task_id = queue_save_task(
+        title=clean_title, chat_history=messages, username=username
+    )
 
-    return {"title": clean_title, "task_id": task_id, "status": "queued", "created_at": current_time.isoformat()}
+    return {
+        "title": clean_title,
+        "task_id": task_id,
+        "status": "queued",
+        "created_at": current_time.isoformat(),
+    }

@@ -29,22 +29,20 @@ def save_chat_history_task(title: str, chat_history: list, username: str):
 
 @worker_app.task(name="invoke_unified_stream")
 def invoke_unified_stream(
-        user_input: str,
-        session_id: str,
-        result_channel: str
+    user_input: str, session_id: str, result_channel: str
 ) -> bool:
     try:
-        from app.services.unified_service import UnifiedService
         from worker.streaming_handler import handle_agent_streaming
+
         from app.infrastructure import infra
+        from app.services.unified_service import UnifiedService
 
         conversation_store = infra.get_conversation_store(session_id=session_id)
 
         unified_service = UnifiedService()
 
         agent, agent_name = unified_service.handle_request(
-            user_input=user_input,
-            conversation_store=conversation_store
+            user_input=user_input, conversation_store=conversation_store
         )
 
         success = handle_agent_streaming(

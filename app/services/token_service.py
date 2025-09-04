@@ -18,11 +18,13 @@ class TokenService:
     def create_access_token(self, data: dict):
         to_encode = data.copy()
 
-        eastern_timezone = pytz.timezone('US/Eastern')
+        eastern_timezone = pytz.timezone("US/Eastern")
 
         current_eastern_time = datetime.now(eastern_timezone)
 
-        expire = current_eastern_time + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = current_eastern_time + timedelta(
+            minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
 
         to_encode.update({"token_expires": expire.isoformat()})
 

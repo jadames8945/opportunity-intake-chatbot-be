@@ -37,9 +37,7 @@ async def get_redis_client() -> AsyncGenerator[Redis, None]:
 
 
 async def listen_and_forward_redis_stream(
-        redis: Redis,
-        result_channel: str,
-        websocket: WebSocket
+    redis: Redis, result_channel: str, websocket: WebSocket
 ):
     last_id = "0-0"
     try:

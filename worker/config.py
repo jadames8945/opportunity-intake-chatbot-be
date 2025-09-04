@@ -1,7 +1,6 @@
 import logging
 
 from celery import Celery
-
 from common.services.redis_service import get_redis_url
 
 logging.basicConfig(
