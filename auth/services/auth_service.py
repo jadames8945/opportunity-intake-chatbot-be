@@ -1,10 +1,10 @@
 import logging
 from typing import Optional
 
-from app.repository.auth_repository import AuthRepository
-from app.schemas.token import Token
-from app.schemas.user import User, UserCredentials
-from app.services.token_service import TokenService
+from auth.repositories.auth_repository import AuthRepository
+from auth.schemas.token import Token
+from auth.schemas.user import User, UserCredentials
+from auth.services.token_service import TokenService
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ class AuthService:
         self.token_service = TokenService()
         self.auth_repository = AuthRepository()
 
-    async def authenticate_user(self, username: str, password: str) -> Optional[User]:
-        user = await self.auth_repository.get_user_by_username(username)
+    def authenticate_user(self, username: str, password: str) -> Optional[User]:
+        user = self.auth_repository.get_user_by_username(username)
 
         if not user:
             return None
@@ -25,13 +25,11 @@ class AuthService:
 
         return user
 
-    async def register_user(self, user: User) -> User:
+    def register_user(self, user: User) -> User:
         logger.info(f"Attempting to register user: {user.username}")
 
         try:
-            existing_user = await self.auth_repository.get_user_by_username(
-                user.username
-            )
+            existing_user = self.auth_repository.get_user_by_username(user.username)
 
             if existing_user:
                 raise ValueError("Username already exists")
@@ -40,7 +38,7 @@ class AuthService:
 
             logger.info("Password hashed successfully")
 
-            created_user: User = await self.auth_repository.create_user(user)
+            created_user: User = self.auth_repository.create_user(user)
 
             logger.info(f"User created in database: {created_user.username}")
 
@@ -50,11 +48,9 @@ class AuthService:
             logger.error(f"Error in register_user: {e}")
             raise
 
-    async def login_user(self, credentials: UserCredentials) -> Token:
+    def login_user(self, credentials: UserCredentials) -> Token:
         try:
-            user = await self.authenticate_user(
-                credentials.username, credentials.password
-            )
+            user = self.authenticate_user(credentials.username, credentials.password)
 
             if not user:
                 raise ValueError("Invalid username or password")

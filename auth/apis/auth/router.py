@@ -1,16 +1,11 @@
-import logging
-
-from fastapi import APIRouter, Depends, HTTPException
-
-from app.exceptions.user_exceptions import (
+from auth.exceptions.user_exceptions import (
     MissingCredentialsException,
     UserException,
     check_credentials,
 )
-from app.schemas.user import User, UserCredentials
-from app.services.auth_service import AuthService
-
-logger = logging.getLogger(__name__)
+from auth.schemas.user import User, UserCredentials
+from auth.services.auth_service import AuthService, logger
+from fastapi import APIRouter, Depends, HTTPException
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -22,14 +17,19 @@ def get_auth_service():
     return AuthService()
 
 
+@auth_router.get("")
+async def get_health_status():
+    return {"status": "ok"}
+
+
 @auth_router.post("/register", response_model=User)
-async def register_user(
+def register_user(
     user: User, auth_service: AuthService = Depends(get_auth_service)
 ) -> User:
     try:
         check_credentials(user.username, user.password)
 
-        user_response = await auth_service.register_user(user)
+        user_response = auth_service.register_user(user)
 
         return user_response
     except MissingCredentialsException as e:
@@ -43,13 +43,13 @@ async def register_user(
 
 
 @auth_router.post("/login", response_model=User)
-async def login_user(
+def login_user(
     user_credentials: UserCredentials,
     auth_service: AuthService = Depends(get_auth_service),
 ) -> User:
     try:
         check_credentials(user_credentials.username, user_credentials.password)
-        result = await auth_service.authenticate_user(
+        result = auth_service.authenticate_user(
             user_credentials.username, user_credentials.password
         )
         logger.info(f"Logged in user {result}")

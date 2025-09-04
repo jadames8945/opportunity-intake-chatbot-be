@@ -3,9 +3,8 @@ from typing import Optional
 
 import jwt
 import pytz
+from auth.configs.auth_settings import AuthSettings
 from passlib.context import CryptContext
-
-from app.config.auth_settings import AuthSettings
 
 
 class TokenService:

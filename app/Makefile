@@ -4,7 +4,13 @@
 format:
 	@echo "🎨 Formatting code..."
 	@poetry run black . --line-length 88
+	@poetry run black ../auth --line-length 88
+	@poetry run black ../common --line-length 88
+	@poetry run black ../worker --line-length 88
 	@poetry run isort . --profile black --line-length 88
+	@poetry run isort ../auth --profile black --line-length 88
+	@poetry run isort ../common --profile black --line-length 88
+	@poetry run isort ../worker --profile black --line-length 88
 	@echo "✅ Formatting complete!"
 
 # Run linting
@@ -38,6 +44,12 @@ clean:
 	@find . -type f -name "*.pyc" -delete
 	@find . -type d -name "__pycache__" -delete
 	@find . -type d -name "*.egg-info" -exec rm -rf {} +
+	@find ../auth -type f -name "*.pyc" -delete
+	@find ../auth -type d -name "__pycache__" -delete
+	@find ../common -type f -name "*.pyc" -delete
+	@find ../common -type d -name "__pycache__" -delete
+	@find ../worker -type f -name "*.pyc" -delete
+	@find ../worker -type d -name "__pycache__" -delete
 	@echo "✅ Cleanup complete!"
 
 # Show help

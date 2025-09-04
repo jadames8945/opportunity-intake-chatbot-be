@@ -28,6 +28,28 @@ services:
     networks:
       - network-service
 
+  #  auth:
+  #    build:
+  #      context: .
+  #      dockerfile: ./auth/Dockerfile
+  #    container_name: opportunity-intake-chatbot-auth
+  #    restart: unless-stopped
+  #    volumes:
+  #      - ./.docker/.ipython:/root/.ipython:cached
+  #    ports:
+  #      - "8887:8887"
+  #    env_file:
+  #      - .env
+  #    environment:
+  #      PYTHONPATH: .
+  #      MONGO_INITDB_ROOT_USERNAME: admin
+  #      MONGO_INITDB_ROOT_PASSWORD: root
+  #      ALLOWED_ORIGINS_REGISTRY: "origin_uris.txt"
+  #    depends_on:
+  #      - mongo
+  #    networks:
+  #      - network-service
+
   backend:
     build:
       context: .
