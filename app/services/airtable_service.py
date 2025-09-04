@@ -132,7 +132,6 @@ class AirtableService:
             "Notes": f"Overview: {submission.data.opportunity_overview}\nAI Component: {submission.data.ai_component}\n\nUrgency: {submission.data.urgency}\nAdditional: {submission.data.additional_notes}",
             "Opportunity Size": submission.data.deal_size,
             "Archetype": submission.data.archetype,
-            "Value Factory": ", ".join(submission.data.value_factory) if submission.data.value_factory else "",
             "FDE Status": submission.data.opportunity_status,
             "Urgency": submission.data.urgency,
             "Source": submission.data.opportunity_source,

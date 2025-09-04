@@ -15,7 +15,6 @@ class OpportunityIntakeData(BaseModel):
     urgency: str
     preferred_platforms_technologies: List[str]
     archetype: str
-    value_factory: Optional[List[str]]
     additional_notes: Optional[str] = ""
 
 

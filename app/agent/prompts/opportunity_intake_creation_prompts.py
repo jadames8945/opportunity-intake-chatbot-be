@@ -47,7 +47,6 @@ Return the response in this exact format:
   "urgency": "",
   "preferred_platforms_technologies": [],
   "archetype": "",
-  "value_factory": [],
   "jupiter_id":"",
   "additional_notes": ""
 }}
@@ -64,7 +63,6 @@ CRITICAL: Use EXACT values provided by the user. Do not add approximation symbol
 - opportunity_status: Current status (new, identified, contacted, qualified, proposal submitted, verbal commit, won etc)
 - preferred_platforms_technologies: Preferred or required technologies
 - archetype: Deal archetype (Art of the Possible in Context, Approach for Client Use Case, Platform Selection, Build for Pre-Sales, Early Stage Implementation)
-- value_factory: Array of value factory types (Value Compass, Value Definition, Value Design, Value Delivery)
 - jupiter_id: Unique identifier for the opportunity
 - additional_notes: Any other relevant information or notes
 

@@ -66,7 +66,6 @@ Required information to collect:
 - AI Component (if any)
 - Preferred Platforms/Technologies: Ask conversationally with bullet point options: "What platforms or technologies are preferred or required? For example: • AWS • Azure • Salesforce • AEM (Adobe Experience Manager) • Java • C# • Python • OpenAI • Docker • React • Node.js. If you have others, just let me know!"
 - Archetype (Art of the Possible in Context, Approach for Client Use Case, Platform Selection, Build for Pre-Sales, Early Stage Implementation)
-- Value Factory (can select multiple: Value Compass, Value Definition, Value Design, Value Delivery)
 - Jupiter ID (unique identifier for the opportunity)
 - Additional Notes
 

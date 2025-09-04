@@ -37,7 +37,7 @@ class ConversationStore:
         self.add_message(assistant_response, "assistant", user_id)
         logger.info(f"Added conversation turn to store for session {self.session_id}: user + assistant messages")
 
-    def get_last_n_messages(self, n: int = 10, user_id: str = None) -> List[Dict[str, str]]:
+    def get_last_n_messages(self, n: int = 10) -> List[Dict[str, str]]:
         messages = self._get_messages()
         result = messages[-n:] if messages else []
         logger.info(f"Retrieved {len(result)} messages from conversation store for session {self.session_id}")
@@ -46,7 +46,7 @@ class ConversationStore:
     def get_all_messages(self) -> List[Dict[str, str]]:
         return self._get_messages().copy()
 
-    def clear_history(self, user_id: str = None):
+    def clear_history(self):
         infra.redis_client.delete(f"conversation:{self.session_id}")
         logger.info(f"Cleared history for session {self.session_id}")
 

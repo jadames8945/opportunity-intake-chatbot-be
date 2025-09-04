@@ -1,6 +1,6 @@
 import logging
-from typing import List, Dict
 from datetime import datetime
+from typing import List, Dict
 
 from fastapi import APIRouter, Depends
 
@@ -22,8 +22,8 @@ def get_chat_history_service() -> ChatHistoryService:
 
 @router.get("")
 async def load_chat_history_on_login(
-    username: str,
-    chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
+        username: str,
+        chat_history_service: ChatHistoryService = Depends(get_chat_history_service)
 ):
     return await chat_history_service.get_all_chat_histories(username)
 
