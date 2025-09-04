@@ -6,12 +6,14 @@ from pyairtable import Api
 
 from app.config.airtable_config import airtable_config
 from app.schemas.airtable_submission import AirtableSubmissionRequest
+from app.services.airtable_cache import AirtableCache
 
 logger = logging.getLogger(__name__)
 
 
 class AirtableService:
     def __init__(self):
+        self.airtable_cache = AirtableCache()
         self.config = airtable_config
 
         if not self.config.is_configured():
@@ -23,6 +25,16 @@ class AirtableService:
         self.opportunity_table = self.base.table(self.config.opportunity_table_id)
         self.client_table = self.base.table(self.config.client_table_id)
         self.stakeholder_table = self.base.table(self.config.stakeholder_table_id)
+
+    async def get_all_records(self, table_id: str) -> List[Dict[str, Any]]:
+        try:
+            table = self.base.table(table_id)
+            records = table.all()
+            logger.info(f"Retrieved {len(records)} records from table {table_id}")
+            return records
+        except Exception as e:
+            logger.error(f"Error getting records from table {table_id}: {str(e)}")
+            return []
 
     async def get_client(self, client_name: str) -> Optional[str]:
         try:
@@ -62,6 +74,50 @@ class AirtableService:
             logger.error(f"Error getting stakeholders {stakeholder_names}: {str(e)}")
             return None
 
+    def _find_client_in_cache(self, client_name: str, cache_data: Dict) -> Optional[str]:
+        for client in cache_data.get("clients", []):
+            if client.get('fields', {}).get('Name') == client_name:
+                return client['id']
+        return None
+
+    def _find_stakeholders_in_cache(self, stakeholder_names: List[str], cache_data: Dict) -> List[str]:
+        found_ids = []
+        for stakeholder_name in stakeholder_names:
+            for stakeholder in cache_data.get("stakeholders", []):
+                if stakeholder.get('fields', {}).get('Name') == stakeholder_name:
+                    found_ids.append(stakeholder['id'])
+                    break
+        return found_ids
+
+    async def load_all_data_from_airtable(self) -> Dict[str, List[Dict[str, Any]]]:
+        cached_data = self.airtable_cache.get_data()
+
+        if cached_data and any(cached_data.values()):
+            logger.info("Airtable cache already populated, returning cached data")
+            return cached_data
+
+        try:
+            clients = await self.get_all_records(self.config.client_table_id)
+            stakeholders = await self.get_all_records(self.config.stakeholder_table_id)
+            opportunities = await self.get_all_records(self.config.opportunity_table_id)
+
+            data = {
+                "clients": clients,
+                "stakeholders": stakeholders,
+                "opportunities": opportunities
+            }
+
+            self.airtable_cache.set_data(data)
+
+            logger.info(
+                f"Cached Airtable data: {len(clients)} clients, {len(stakeholders)} stakeholders, {len(opportunities)} opportunities"
+            )
+
+            return data
+        except Exception as e:
+            logger.error(f"Error loading Airtable data: {str(e)}")
+            return {"clients": [], "stakeholders": [], "opportunities": []}
+
     def _build_opportunity_fields(
             self,
             submission: AirtableSubmissionRequest,
@@ -80,7 +136,8 @@ class AirtableService:
             "FDE Status": submission.data.opportunity_status,
             "Urgency": submission.data.urgency,
             "Source": submission.data.opportunity_source,
-            "Technology Preferences": ", ".join(submission.data.preferred_platforms_technologies) if submission.data.preferred_platforms_technologies else "",
+            "Technology Preferences": ", ".join(
+                submission.data.preferred_platforms_technologies) if submission.data.preferred_platforms_technologies else "",
             "AI Pattern": submission.data.ai_component,
             "Date Created": current_date,
             "Last Updated": current_date
@@ -99,16 +156,28 @@ class AirtableService:
             raise Exception("Airtable not configured")
 
         try:
-            client_id = await self.get_client(submission.data.client_name)
+            cache_data = self.airtable_cache.get_data()
 
-            stakeholder_ids = await self.get_stakeholders(submission.data.internal_stakeholders)
+            client_id = self._find_client_in_cache(submission.data.client_name, cache_data)
+            if client_id is None:
+                client_id = await self.get_client(submission.data.client_name)
 
-            fields = self._build_opportunity_fields(submission, client_id, stakeholder_ids)
+            stakeholder_ids = self._find_stakeholders_in_cache(submission.data.internal_stakeholders, cache_data)
+            if len(stakeholder_ids) != len(submission.data.internal_stakeholders):
+                stakeholder_ids = await self.get_stakeholders(submission.data.internal_stakeholders)
+
+            fields = self._build_opportunity_fields(
+                submission=submission,
+                client_id=client_id,
+                stakeholder_ids=stakeholder_ids
+            )
 
             record = self.opportunity_table.create(fields, typecast=True)
+
             record_id = record['id']
 
             logger.info(f"Successfully submitted to Airtable: {record_id}")
+
             return {
                 "success": True,
                 "message": "Successfully submitted to Airtable",

@@ -37,6 +37,9 @@ class OpportunityIntakeAdvisorAgent:
                     Chat History:
                     {{chat_history}}
                     
+                    Airtable Context:
+                    {{airtable_context}}
+                    
                     User Query:
                     {{query}}
                     """,

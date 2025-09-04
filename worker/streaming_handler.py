@@ -1,9 +1,11 @@
 import logging
 from typing import List, Dict
 
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
 from app.config.conversation_store import ConversationStore
+from app.services.airtable_cache import AirtableCache
 from common.redis_infrastructure import infra
 from common.utils.llm_util import format_chat_history_for_prompt
 
@@ -20,13 +22,20 @@ def handle_agent_streaming(
 ) -> bool:
     try:
 
-        chat_history = conversation_store.get_all_messages() if agent_name == "opportunity_intake_advisor_agent" else conversation_store.get_last_n_messages(10)
+        chat_history = conversation_store.get_all_messages() \
+            if agent_name == "opportunity_intake_advisor_agent" \
+            else conversation_store.get_last_n_messages(10)
 
         logger.info(f"session_id:{session_id} chat history: {chat_history}")
 
         return _handle_streaming_response(
-            user_input, agent_instance, agent_name, result_channel,
-            session_id, conversation_store, chat_history
+            user_input=user_input,
+            agent_instance=agent_instance,
+            agent_name=agent_name,
+            result_channel=result_channel,
+            session_id=session_id,
+            conversation_store=conversation_store,
+            chat_history=chat_history
         )
 
     except Exception as e:
@@ -34,21 +43,42 @@ def handle_agent_streaming(
         return False
 
 
+def get_formatted_prompt(
+        user_input: str,
+        agent_name: str,
+        prompt: ChatPromptTemplate,
+        chat_history: List[Dict[str, str]]
+) -> str:
+    if agent_name == "opportunity_intake_advisor_agent":
+        return prompt.format(
+            query=user_input,
+            airtable_context=AirtableCache().get_data(),
+            chat_history=format_chat_history_for_prompt(chat_history)
+        )
+
+    return prompt.format(
+        query=user_input,
+        chat_history=format_chat_history_for_prompt(chat_history)
+    )
+
+
 def _handle_streaming_response(
         user_input: str,
         agent_instance,
         agent_name: str,
         result_channel: str,
-        session: str,
+        session_id: str,
         conversation_store,
         chat_history: List[Dict[str, str]]
 ) -> bool:
     try:
-        prompt = agent_instance.prompt
+        prompt: ChatPromptTemplate = agent_instance.prompt
 
-        formatted_prompt = prompt.format(
-            query=user_input,
-            chat_history=format_chat_history_for_prompt(chat_history)
+        formatted_prompt = get_formatted_prompt(
+            user_input=user_input,
+            agent_name=agent_name,
+            prompt=prompt,
+            chat_history=chat_history
         )
 
         llm = ChatOpenAI(model="gpt-4.1-mini", streaming=True)
@@ -94,7 +124,7 @@ def _handle_streaming_response(
                 final_result=result,
             )
 
-            logger.info(f"Streaming completed for {agent_name} in session: {session}")
+            logger.info(f"Streaming completed for {agent_name} in session: {session_id}")
             return True
 
         return True
@@ -105,11 +135,19 @@ def _handle_streaming_response(
 
 
 def _publish_chunk(
-        chunk: str, channel: str, agent_name: str, progress: str, final_result: dict = None
+        chunk: str,
+        channel: str,
+        agent_name: str,
+        progress: str,
+        final_result: dict = None
 ) -> bool:
     redis_client = infra.redis_client
 
-    message = {"agent_name": str(agent_name), "progress": progress, "chunk": chunk}
+    message = {
+        "agent_name": str(agent_name),
+        "progress": progress,
+        "chunk": chunk
+    }
 
     if final_result:
         message.update(final_result)
