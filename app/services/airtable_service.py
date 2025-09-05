@@ -128,17 +128,35 @@ class AirtableService:
             logger.error(f"Error loading Airtable data: {str(e)}")
             return {"clients": [], "stakeholders": [], "opportunities": []}
 
+    async def check_opportunity_name_exists(
+        self, opportunity_name: str, cache_data: Dict[str, List[Dict[str, Any]]]
+    ) -> bool:
+        try:
+            for opportunity in cache_data.get("opportunities", []):
+                if (
+                    opportunity.get("fields", {}).get("Opportunity Name")
+                    == opportunity_name
+                ):
+                    return True
+
+            records = self.opportunity_table.all(
+                formula=f"{{Opportunity Name}}='{opportunity_name}'", max_records=1
+            )
+
+            return len(records) > 0
+
+        except Exception as e:
+            logger.error(f"Error checking opportunity name existence: {str(e)}")
+            return False
+
     def _build_opportunity_fields(
         self,
         submission: AirtableSubmissionRequest,
+        opportunity_name: str,
         client_id: Optional[str] = None,
         stakeholder_ids: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         current_date = datetime.now().strftime("%Y-%m-%d")
-
-        opportunity_name = (
-            submission.data.opportunity_name or submission.data.client_name
-        )
 
         fields = {
             "Opportunity Name": opportunity_name,
@@ -176,6 +194,20 @@ class AirtableService:
         try:
             cache_data = self.airtable_cache.get_data()
 
+            opportunity_name = (
+                submission.data.opportunity_name or submission.data.client_name
+            )
+
+            if await self.check_opportunity_name_exists(
+                opportunity_name=opportunity_name, cache_data=cache_data
+            ):
+                return {
+                    "success": False,
+                    "message": f"An opportunity with the name '{opportunity_name}' already exists. Please choose a different name.",
+                    "record_id": None,
+                    "duplicate_name": opportunity_name,
+                }
+
             client_id = self._find_client_in_cache(
                 submission.data.client_name, cache_data
             )
@@ -194,11 +226,14 @@ class AirtableService:
                 submission=submission,
                 client_id=client_id,
                 stakeholder_ids=stakeholder_ids,
+                opportunity_name=opportunity_name,
             )
 
             record = self.opportunity_table.create(fields, typecast=True)
 
             record_id = record["id"]
+
+            await self._update_cache_with_new_opportunity(record, cache_data)
 
             logger.info(f"Successfully submitted to Airtable: {record_id}")
 
@@ -215,3 +250,21 @@ class AirtableService:
                 "message": f"Error submitting to Airtable: {str(e)}",
                 "record_id": None,
             }
+
+    async def _update_cache_with_new_opportunity(
+        self, new_record: Dict[str, Any], cache_data: Dict[str, List[Dict[str, Any]]]
+    ):
+        try:
+            if "opportunities" not in cache_data:
+                cache_data["opportunities"] = []
+
+            cache_data["opportunities"].append(new_record)
+
+            self.airtable_cache.set_data(cache_data)
+
+            logger.info(
+                f"Updated cache with new opportunity: {new_record.get('id', 'unknown')}"
+            )
+
+        except Exception as e:
+            logger.error(f"Error updating cache with new opportunity: {str(e)}")

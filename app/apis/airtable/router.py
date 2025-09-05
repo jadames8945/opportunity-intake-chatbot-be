@@ -35,6 +35,8 @@ async def submit_opportunity_intake(
         else:
             raise HTTPException(status_code=400, detail=result["message"])
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error submitting opportunity intake: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
