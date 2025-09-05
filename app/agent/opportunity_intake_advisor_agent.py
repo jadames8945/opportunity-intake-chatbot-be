@@ -10,7 +10,7 @@ from app.agent.prompts.opportunity_intake_advisor_prompts import (
     CHAT_ROLE,
     RESPONSE_FORMAT,
 )
-from app.config.conversation_store import ConversationStore
+from app.caches.conversation_store import ConversationStore
 from app.schemas.opportunity_response import OpportunityResponse
 
 logger = logging.getLogger(__name__)

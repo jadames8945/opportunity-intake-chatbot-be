@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Optional
 
 from pyairtable import Api
 
+from app.caches.airtable_cache import AirtableCache
 from app.config.airtable_config import airtable_config
 from app.schemas.airtable_submission import AirtableSubmissionRequest
-from app.services.airtable_cache import AirtableCache
 
 logger = logging.getLogger(__name__)
 
@@ -233,7 +233,9 @@ class AirtableService:
 
             record_id = record["id"]
 
-            await self._update_cache_with_new_opportunity(record, cache_data)
+            await self._update_cache_with_new_opportunity(
+                new_record=record, cache_data=cache_data
+            )
 
             logger.info(f"Successfully submitted to Airtable: {record_id}")
 

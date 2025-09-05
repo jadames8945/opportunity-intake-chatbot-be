@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List
 
 from app.agent.chat_history_agent import ChatHistoryAgent
-from app.config.conversation_store import get_or_create_conversation_store
+from app.caches.conversation_store import get_or_create_conversation_store
 from app.repository.chat_history_repository import ChatHistoryRepository
 from app.schemas.chat_history_request import ChatHistoryRequest
 

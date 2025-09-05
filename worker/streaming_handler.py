@@ -6,8 +6,8 @@ from common.utils.llm_util import format_chat_history_for_prompt
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
-from app.config.conversation_store import ConversationStore
-from app.services.airtable_cache import AirtableCache
+from app.caches.airtable_cache import AirtableCache
+from app.caches.conversation_store import ConversationStore
 
 logger = logging.getLogger(__name__)
 

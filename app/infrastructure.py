@@ -5,7 +5,7 @@ from common.mongo_infrastructure import infra as mongo_infra
 from common.redis_infrastructure import infra as redis_infra
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.config.conversation_store import get_or_create_conversation_store
+from app.caches.conversation_store import get_or_create_conversation_store
 
 logger = logging.getLogger(__name__)
 
