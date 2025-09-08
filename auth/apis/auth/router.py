@@ -5,6 +5,7 @@ from auth.exceptions.user_exceptions import (
     UserException,
     check_credentials,
 )
+from auth.schemas.token import Token
 from auth.schemas.user import User, UserCredentials
 from auth.services.auth_service import AuthService, logger
 
@@ -43,17 +44,17 @@ async def register_user(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@auth_router.post("/login", response_model=User)
+@auth_router.post("/login", response_model=Token)
 async def login_user(
     user_credentials: UserCredentials,
     auth_service: AuthService = Depends(get_auth_service),
-) -> User:
+) -> Token:
     try:
         check_credentials(user_credentials.username, user_credentials.password)
-        result = await auth_service.authenticate_user(
-            user_credentials.username, user_credentials.password
-        )
-        logger.info(f"Logged in user {result}")
+
+        result = await auth_service.login_user(user_credentials)
+
+        logger.info(f"Logged in user {result.user}")
         return result
     except MissingCredentialsException as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -62,4 +63,5 @@ async def login_user(
     except UserException as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        logger.error(f"Login error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
