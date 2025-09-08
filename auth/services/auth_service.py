@@ -14,8 +14,8 @@ class AuthService:
         self.token_service = TokenService()
         self.auth_repository = AuthRepository()
 
-    def authenticate_user(self, username: str, password: str) -> Optional[User]:
-        user = self.auth_repository.get_user_by_username(username)
+    async def authenticate_user(self, username: str, password: str) -> Optional[User]:
+        user = await self.auth_repository.get_user_by_username(username)
 
         if not user:
             return None
@@ -25,11 +25,13 @@ class AuthService:
 
         return user
 
-    def register_user(self, user: User) -> User:
+    async def register_user(self, user: User) -> User:
         logger.info(f"Attempting to register user: {user.username}")
 
         try:
-            existing_user = self.auth_repository.get_user_by_username(user.username)
+            existing_user = await self.auth_repository.get_user_by_username(
+                user.username
+            )
 
             if existing_user:
                 raise ValueError("Username already exists")
@@ -38,7 +40,7 @@ class AuthService:
 
             logger.info("Password hashed successfully")
 
-            created_user: User = self.auth_repository.create_user(user)
+            created_user: User = await self.auth_repository.create_user(user)
 
             logger.info(f"User created in database: {created_user.username}")
 
@@ -48,9 +50,11 @@ class AuthService:
             logger.error(f"Error in register_user: {e}")
             raise
 
-    def login_user(self, credentials: UserCredentials) -> Token:
+    async def login_user(self, credentials: UserCredentials) -> Token:
         try:
-            user = self.authenticate_user(credentials.username, credentials.password)
+            user = await self.authenticate_user(
+                credentials.username, credentials.password
+            )
 
             if not user:
                 raise ValueError("Invalid username or password")

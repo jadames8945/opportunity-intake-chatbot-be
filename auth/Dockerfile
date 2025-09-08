@@ -26,7 +26,7 @@ COPY app/ app/
 COPY common/ common/
 COPY worker/ worker/
 
-EXPOSE 8887
+EXPOSE 9201
 
 RUN chmod +x auth/prestart.sh
 

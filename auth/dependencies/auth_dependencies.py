@@ -1,7 +1,8 @@
-from auth.schemas.token import TokenData
-from auth.services.auth_service import AuthService
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from auth.schemas.token import TokenData
+from auth.services.auth_service import AuthService
 
 security = HTTPBearer()
 

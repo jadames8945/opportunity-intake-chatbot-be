@@ -5,8 +5,8 @@ from typing import List, cast
 class AppConfig:
     def __init__(self) -> None:
         self.ENV = cast(str, os.getenv("ENV", "DEV"))
-        self.PORT = int(os.getenv("PORT", "8888"))
-        self.AUTH_PORT = int(os.getenv("AUTH_PORT", "8887"))
+        self.PORT = int(os.getenv("PORT", "9200"))
+        self.AUTH_PORT = int(os.getenv("AUTH_PORT", "9201"))
 
     def allowed_origins(self) -> List[str]:
         env_origins = os.getenv("ALLOWED_ORIGINS")
@@ -16,6 +16,7 @@ class AppConfig:
         return [
             "http://localhost:3000",
             "https://opportunity-intake-chatbot.coolify.dd-dpe.com",
+            "https://test-fde-intake-chatbot.coolify.dd-dpe.com",
         ]
 
 
