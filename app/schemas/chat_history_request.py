@@ -12,4 +12,5 @@ class ChatHistoryRequest(BaseModel):
 
 class ChatHistoryUpdateRequest(BaseModel):
     username: str
+    chat_id: str
     messages: List[Dict[str, Any]]

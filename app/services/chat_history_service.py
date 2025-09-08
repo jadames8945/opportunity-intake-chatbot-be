@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from app.agent.chat_history_agent import ChatHistoryAgent
 from app.caches.conversation_store import get_or_create_conversation_store
@@ -32,22 +32,20 @@ class ChatHistoryService:
 
     async def save_to_mongodb(
         self, title: str, chat_history: List[Dict[str, str]], username: str
-    ) -> bool:
+    ) -> Optional[str]:
         return await self.repository.save_chat_history(
             title=title, chat_history=chat_history, username=username
         )
 
     async def update_chat_history(
-        self, session_id: str, messages: List[Dict[str, str]], username: str
+        self, chat_id: str, messages: List[Dict[str, str]], username: str
     ) -> Dict[str, str]:
-        success = await self.repository.update_chat_history(
-            session_id, messages, username
-        )
+        success = await self.repository.update_chat_history(chat_id, messages, username)
         return {
             "message": (
                 "Chat history updated successfully" if success else "Update failed"
             ),
-            "session_id": session_id,
+            "chat_id": chat_id,
             "timestamp": str(datetime.utcnow()),
         }
 

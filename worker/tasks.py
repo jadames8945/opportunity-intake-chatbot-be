@@ -14,7 +14,13 @@ def save_chat_history_task(title: str, chat_history: List, username: str) -> boo
 
         service = ChatHistoryService()
 
-        success = asyncio.run(
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        success = loop.run_until_complete(
             service.save_to_mongodb(
                 title=title, chat_history=chat_history, username=username
             )

@@ -9,7 +9,6 @@ from app.schemas.chat_history_request import (
     ChatHistoryUpdateRequest,
 )
 from app.services.chat_history_service import ChatHistoryService
-from app.util.websocket_helpers import queue_save_task
 
 logger = logging.getLogger(__name__)
 
@@ -95,37 +94,38 @@ async def save_chat_history(
     clean_title = title.strip().strip('"').strip("'")
     current_time = datetime.utcnow()
 
-    task_id = queue_save_task(
+    chat_id = await chat_history_service.save_to_mongodb(
         title=clean_title, chat_history=messages, username=username
     )
 
+    if not chat_id:
+        raise Exception("Failed to save chat history")
+
     return {
         "title": clean_title,
-        "task_id": task_id,
-        "status": "queued",
+        "chat_id": chat_id,
+        "status": "saved",
         "created_at": current_time.isoformat(),
     }
 
 
-@router.put("/{session_id}")
+@router.put("/")
 async def update_chat_history(
-    session_id: str,
     request: ChatHistoryUpdateRequest,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, str]:
     username = request.username
+    chat_id = request.chat_id
     messages = request.messages
 
-    if not session_id or not username:
-        raise Exception("session_id and username cannot be None")
+    if not chat_id or not username:
+        raise Exception("chat_id and username cannot be None")
 
     if not messages:
         raise Exception("No messages provided")
 
     logger.info(
-        f"Updating chat history for session {session_id} with {len(messages)} messages"
+        f"Updating chat history for chat_id '{chat_id}' with {len(messages)} messages"
     )
 
-    return await chat_history_service.update_chat_history(
-        session_id, messages, username
-    )
+    return await chat_history_service.update_chat_history(chat_id, messages, username)

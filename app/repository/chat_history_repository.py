@@ -16,7 +16,7 @@ class ChatHistoryRepository:
 
     async def save_chat_history(
         self, title: str, chat_history: List[Dict[str, str]], username: str
-    ) -> bool:
+    ) -> Optional[str]:
         try:
             document = {
                 "session_id": str(uuid.uuid4()),
@@ -28,11 +28,11 @@ class ChatHistoryRepository:
 
             result = await self.collection.insert_one(document=document)
             logger.info(f"Saved chat history with ID: {result.inserted_id}")
-            return True
+            return str(result.inserted_id)
 
         except Exception as e:
             logger.error(f"Failed to save chat history: {e}")
-            return False
+            return None
 
     async def get_chat_history_by_title(
         self, title: str, username: str
@@ -49,11 +49,13 @@ class ChatHistoryRepository:
             return None
 
     async def update_chat_history(
-        self, session_id: str, messages: List[Dict[str, str]], username: str
+        self, chat_id: str, messages: List[Dict[str, str]], username: str
     ) -> bool:
         try:
+            from bson import ObjectId
+
             result = await self.collection.update_one(
-                {"session_id": session_id, "username": username},
+                {"_id": ObjectId(chat_id), "username": username},
                 {
                     "$set": {
                         "chat_history": messages,
@@ -63,11 +65,11 @@ class ChatHistoryRepository:
             )
 
             if result.modified_count > 0:
-                logger.info(f"Updated chat history for session: {session_id}")
+                logger.info(f"Updated chat history for chat_id: {chat_id}")
                 return True
             else:
                 logger.warning(
-                    f"No chat history found to update for session: {session_id}"
+                    f"No chat history found to update for chat_id: {chat_id}"
                 )
                 return False
 

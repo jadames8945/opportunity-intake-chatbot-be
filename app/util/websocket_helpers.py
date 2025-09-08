@@ -116,23 +116,3 @@ async def handle_invoke(
     )
 
     return session_id, redis_tasks
-
-
-def queue_save_task(
-    title: str, chat_history: List[Dict[str, str]], username: str
-) -> str:
-    try:
-        from worker.tasks import save_chat_history_task
-
-        task = save_chat_history_task.delay(
-            title=title, chat_history=chat_history, username=username
-        )
-
-        task_id = str(task.id)
-        logger.info(f"Queued chat history save task: {task_id}")
-
-        return task_id
-
-    except Exception as e:
-        logger.error(f"Failed to queue save task: {e}")
-        return str(uuid.uuid4())
