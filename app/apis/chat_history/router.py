@@ -93,15 +93,17 @@ async def save_chat_history(
             title += chunk.content
 
     clean_title = title.strip().strip('"').strip("'")
+    current_time = datetime.utcnow()
 
     task_id = queue_save_task(
         title=clean_title, chat_history=messages, username=username
     )
 
     return {
-        "message": "Chat history saved successfully",
+        "title": clean_title,
         "task_id": task_id,
-        "timestamp": str(datetime.utcnow()),
+        "status": "queued",
+        "created_at": current_time.isoformat(),
     }
 
 
