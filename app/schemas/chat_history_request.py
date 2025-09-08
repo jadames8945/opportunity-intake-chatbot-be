@@ -8,3 +8,8 @@ class ChatHistoryRequest(BaseModel):
     username: str
     chat_title: Optional[str] = None
     messages: Optional[List[Dict[str, Any]]] = None
+
+
+class ChatHistoryUpdateRequest(BaseModel):
+    username: str
+    messages: List[Dict[str, Any]]

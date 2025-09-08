@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
@@ -18,6 +19,7 @@ class ChatHistoryRepository:
     ) -> bool:
         try:
             document = {
+                "session_id": str(uuid.uuid4()),
                 "username": username,
                 "title": title,
                 "chat_history": chat_history,
@@ -45,6 +47,33 @@ class ChatHistoryRepository:
         except Exception as e:
             logger.error(f"Failed to get chat history: {e}")
             return None
+
+    async def update_chat_history(
+        self, session_id: str, messages: List[Dict[str, str]], username: str
+    ) -> bool:
+        try:
+            result = await self.collection.update_one(
+                {"session_id": session_id, "username": username},
+                {
+                    "$set": {
+                        "chat_history": messages,
+                        "updated_at": datetime.utcnow(),
+                    }
+                },
+            )
+
+            if result.modified_count > 0:
+                logger.info(f"Updated chat history for session: {session_id}")
+                return True
+            else:
+                logger.warning(
+                    f"No chat history found to update for session: {session_id}"
+                )
+                return False
+
+        except Exception as e:
+            logger.error(f"Failed to update chat history: {e}")
+            return False
 
     async def get_all_chat_histories(self, username: str) -> List[Dict[str, Any]]:
         try:

@@ -4,7 +4,10 @@ from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends
 
-from app.schemas.chat_history_request import ChatHistoryRequest
+from app.schemas.chat_history_request import (
+    ChatHistoryRequest,
+    ChatHistoryUpdateRequest,
+)
 from app.services.chat_history_service import ChatHistoryService
 from app.util.websocket_helpers import queue_save_task
 
@@ -76,7 +79,7 @@ async def save_chat_history(
         raise Exception("No messages provided")
 
     logger.info(
-        f"Saving chat history for session {session_id} with {len(messages)} messages"
+        f"Saving new chat history for session {session_id} with {len(messages)} messages"
     )
 
     stream = chat_history_service.generate_title_stream(chat_history=messages)
@@ -90,15 +93,37 @@ async def save_chat_history(
             title += chunk.content
 
     clean_title = title.strip().strip('"').strip("'")
-    current_time = datetime.utcnow()
 
     task_id = queue_save_task(
         title=clean_title, chat_history=messages, username=username
     )
 
     return {
-        "title": clean_title,
+        "message": "Chat history saved successfully",
         "task_id": task_id,
-        "status": "queued",
-        "created_at": current_time.isoformat(),
+        "timestamp": str(datetime.utcnow()),
     }
+
+
+@router.put("/{session_id}")
+async def update_chat_history(
+    session_id: str,
+    request: ChatHistoryUpdateRequest,
+    chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
+) -> Dict[str, str]:
+    username = request.username
+    messages = request.messages
+
+    if not session_id or not username:
+        raise Exception("session_id and username cannot be None")
+
+    if not messages:
+        raise Exception("No messages provided")
+
+    logger.info(
+        f"Updating chat history for session {session_id} with {len(messages)} messages"
+    )
+
+    return await chat_history_service.update_chat_history(
+        session_id, messages, username
+    )

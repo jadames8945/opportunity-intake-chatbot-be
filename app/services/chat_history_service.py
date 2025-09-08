@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Any, Dict, List
 
 from app.agent.chat_history_agent import ChatHistoryAgent
@@ -35,6 +36,20 @@ class ChatHistoryService:
         return await self.repository.save_chat_history(
             title=title, chat_history=chat_history, username=username
         )
+
+    async def update_chat_history(
+        self, session_id: str, messages: List[Dict[str, str]], username: str
+    ) -> Dict[str, str]:
+        success = await self.repository.update_chat_history(
+            session_id, messages, username
+        )
+        return {
+            "message": (
+                "Chat history updated successfully" if success else "Update failed"
+            ),
+            "session_id": session_id,
+            "timestamp": str(datetime.utcnow()),
+        }
 
     async def load_chat_history_into_store(
         self, session_id: str, messages: List[Dict[str, Any]]
