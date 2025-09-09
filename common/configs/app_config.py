@@ -17,6 +17,7 @@ class AppConfig:
             "http://localhost:3000",
             "https://opportunity-intake-chatbot.coolify.dd-dpe.com",
             "https://test-fde-intake-chatbot.coolify.dd-dpe.com",
+            "https://fde-intake-chatbot.coolify.dd-dpe.com",
         ]
 
 
