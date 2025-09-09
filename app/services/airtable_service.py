@@ -161,7 +161,7 @@ class AirtableService:
         fields = {
             "Opportunity Name": opportunity_name,
             "Opportunity ID": submission.data.jupiter_id,
-            "Notes": f"Overview: {submission.data.opportunity_overview}\nAI Component: {submission.data.ai_component}\n\nUrgency: {submission.data.urgency}\nAdditional: {submission.data.additional_notes}",
+            "Notes": f"Overview: {submission.data.opportunity_overview}\nAI Component: {submission.data.ai_component}\n\nUrgency: {submission.data.urgency}\nAdditional: {submission.data.additional_notes}\nSubmitted by: {submission.submitted_by}",
             "Opportunity Size": submission.data.deal_size,
             "Archetype": submission.data.archetype,
             "FDE Status": submission.data.opportunity_status,
