@@ -76,7 +76,7 @@ async def handle_invoke(
     session_id: str,
     redis: Any,
     redis_tasks: Set,
-) -> Tuple[str, Set]:
+) -> Set:
     result_channel = f"invoke_result_{session_id}_{uuid.uuid4().hex}"
 
     is_valid, user_input = await _validate_user_input(
@@ -84,7 +84,7 @@ async def handle_invoke(
     )
 
     if not is_valid:
-        return session_id, redis_tasks
+        return redis_tasks
 
     task_success = await _invoke_background_task(
         user_input=user_input, session_id=session_id, result_channel=result_channel
@@ -98,7 +98,7 @@ async def handle_invoke(
                 "error": "Failed to start background task",
             }
         )
-        return session_id, redis_tasks
+        return redis_tasks
 
     await websocket.send_json(
         {
@@ -115,4 +115,4 @@ async def handle_invoke(
         redis_tasks=redis_tasks,
     )
 
-    return session_id, redis_tasks
+    return redis_tasks

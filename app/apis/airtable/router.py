@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.schemas.airtable_submission import (
     AirtableSubmissionRequest,
@@ -22,9 +22,14 @@ def get_airtable_service():
 
 @router.post("/submit", response_model=AirtableSubmissionResponse)
 async def submit_opportunity_intake(
+    request: Request,
     submission: AirtableSubmissionRequest,
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
+    session_id = request.cookies.get("session_id")
+    if not session_id:
+        raise HTTPException(status_code=401, detail="No session found")
+
     try:
         result = await airtable_service.submit_opportunity_intake(submission)
 
@@ -44,8 +49,13 @@ async def submit_opportunity_intake(
 
 @router.post("/load-cache")
 async def load_airtable_cache(
+    request: Request,
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
+    session_id = request.cookies.get("session_id")
+    if not session_id:
+        raise HTTPException(status_code=401, detail="No session found")
+
     try:
         data = await airtable_service.load_all_data_from_airtable()
 

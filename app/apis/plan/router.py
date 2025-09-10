@@ -1,6 +1,5 @@
 import json
 import logging
-import uuid
 from typing import Set
 
 from common.services.redis_service import get_redis_client
@@ -26,8 +25,13 @@ def get_unified_service() -> UnifiedService:
 async def websocket_endpoint(
     websocket: WebSocket, redis: Redis = Depends(get_redis_client)
 ) -> None:
+    session_id = websocket.cookies.get("session_id")
+
+    if not session_id:
+        await websocket.close(code=1008, reason="No session")
+        return
+
     await websocket.accept()
-    session_id = str(uuid.uuid4())
     redis_tasks: Set = set()
 
     await websocket.send_json({"type": "session_established", "session_id": session_id})
@@ -41,7 +45,7 @@ async def websocket_endpoint(
                 await handle_ack(data=data, redis=redis)
                 continue
 
-            session_id, redis_tasks = await handle_invoke(
+            await handle_invoke(
                 websocket=websocket,
                 data=data,
                 session_id=session_id,

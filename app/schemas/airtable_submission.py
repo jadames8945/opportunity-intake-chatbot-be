@@ -23,7 +23,6 @@ class OpportunityIntakeData(BaseModel):
 class AirtableSubmissionRequest(BaseModel):
     data: OpportunityIntakeData
     username: str
-    session_id: str
     submitted_by: str
 
 
