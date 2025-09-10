@@ -1,3 +1,5 @@
+from typing import Dict
+
 from auth.dependencies.session_dependencies import get_session_service
 from auth.exceptions.user_exceptions import (
     MissingCredentialsException,
@@ -8,7 +10,7 @@ from auth.schemas.token import Token
 from auth.schemas.user import User, UserCredentials
 from auth.services.auth_service import AuthService, logger
 from auth.services.session_service import SessionService
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -99,3 +101,21 @@ async def login_user(
     except Exception as e:
         logger.error(f"Login error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@auth_router.post("/logout")
+async def logout_user(
+    request: Request,
+    response: Response,
+    session_service: SessionService = Depends(get_session_service),
+) -> Dict[str, str]:
+    session_id = request.cookies.get("session_id")
+
+    if session_id:
+        session_service.invalidate_session(session_id)
+
+    response.delete_cookie(
+        key="session_id", httponly=True, secure=False, samesite="lax"
+    )
+
+    return {"message": "Logged out successfully"}

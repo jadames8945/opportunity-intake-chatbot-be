@@ -2,7 +2,8 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, Depends
+from auth.dependencies.session_dependencies import get_current_user_id
+from fastapi import APIRouter, Depends, Request
 
 from app.schemas.chat_history_request import (
     ChatHistoryRequest,
@@ -32,53 +33,64 @@ async def load_chat_history_on_login(
 
 @router.post("/load")
 async def load_chat_history(
-    request: ChatHistoryRequest,
+    request: Request,
+    chat_history_request: ChatHistoryRequest,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> List[Dict[str, str]]:
+    user_id = get_current_user_id(request)
     logger.info(
-        f"Received load request: session_id={request.session_id}, chat_title={request.chat_title}"
+        f"Received load request: user_id={user_id}, chat_title={chat_history_request.chat_title}"
     )
 
-    if (
-        request.session_id is None
-        or request.chat_title is None
-        or request.username is None
-    ):
-        raise Exception("session_id, chat_title, or username cannot be None")
+    if chat_history_request.chat_title is None or chat_history_request.username is None:
+        raise Exception("chat_title or username cannot be None")
 
     return await chat_history_service.load_chat_history_into_store(
-        session_id=request.session_id, messages=request.messages
+        session_id=user_id, messages=chat_history_request.messages
     )
 
 
 @router.delete("/delete")
 async def delete_chat_history(
-    request: ChatHistoryRequest,
+    request: Request,
+    chat_history_request: ChatHistoryRequest,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, Any]:
-    if not request.session_id or not request.chat_title or not request.username:
-        raise Exception("session_id, chat_title, or username cannot be None")
+    user_id = get_current_user_id(request)
+    logger.info(
+        f"Delete request from user_id={user_id} for chat_title={chat_history_request.chat_title}"
+    )
 
-    return await chat_history_service.delete_chat_history(request=request)
+    if not chat_history_request.chat_title or not chat_history_request.username:
+        raise Exception("chat_title or username cannot be None")
+
+    return await chat_history_service.delete_chat_history(
+        request=chat_history_request, user_id=user_id
+    )
 
 
 @router.post("/save")
 async def save_chat_history(
-    request: ChatHistoryRequest,
+    request: Request,
+    chat_history_request: ChatHistoryRequest,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, str]:
-    session_id = request.session_id
-    username = request.username
-    messages = request.messages if hasattr(request, "messages") else []
+    user_id = get_current_user_id(request)
+    username = chat_history_request.username
+    messages = (
+        chat_history_request.messages
+        if hasattr(chat_history_request, "messages")
+        else []
+    )
 
-    if not session_id or not username:
-        raise Exception("session_id and username cannot be None")
+    if not username:
+        raise Exception("username cannot be None")
 
     if not messages:
         raise Exception("No messages provided")
 
     logger.info(
-        f"Saving new chat history for session {session_id} with {len(messages)} messages"
+        f"Saving new chat history for user {user_id} with {len(messages)} messages"
     )
 
     stream = chat_history_service.generate_title_stream(chat_history=messages)
@@ -111,12 +123,12 @@ async def save_chat_history(
 
 @router.put("/")
 async def update_chat_history(
-    request: ChatHistoryUpdateRequest,
+    chat_history_request: ChatHistoryUpdateRequest,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> Dict[str, str]:
-    username = request.username
-    chat_id = request.chat_id
-    messages = request.messages
+    username = chat_history_request.username
+    chat_id = chat_history_request.chat_id
+    messages = chat_history_request.messages
 
     if not chat_id or not username:
         raise Exception("chat_id and username cannot be None")

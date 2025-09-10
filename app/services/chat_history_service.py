@@ -67,11 +67,12 @@ class ChatHistoryService:
     async def get_all_chat_histories(self, username: str) -> List[Dict[str, Any]]:
         return await self.repository.get_all_chat_histories(username=username)
 
-    async def delete_chat_history(self, request: ChatHistoryRequest) -> Dict[str, Any]:
-        conversation_store = get_or_create_conversation_store(
-            session_id=request.session_id
-        )
-        conversation_store.clear_history()
+    async def delete_chat_history(
+        self, request: ChatHistoryRequest, user_id: str = None
+    ) -> Dict[str, Any]:
+        if user_id:
+            conversation_store = get_or_create_conversation_store(session_id=user_id)
+            conversation_store.clear_history()
 
         return await self.repository.delete_chat_history(
             title=request.chat_title, username=request.username

@@ -40,7 +40,7 @@ async def websocket_endpoint(
     await websocket.accept()
     redis_tasks: Set = set()
 
-    await websocket.send_json({"type": "session_established", "session_id": session_id})
+    await websocket.send_json({"type": "session_established", "session_id": user_id})
 
     try:
         while True:
@@ -54,7 +54,7 @@ async def websocket_endpoint(
             await handle_invoke(
                 websocket=websocket,
                 data=data,
-                session_id=session_id,
+                session_id=user_id,
                 redis=redis,
                 redis_tasks=redis_tasks,
             )
