@@ -17,14 +17,18 @@ Your capabilities:
 
 OPPORTUNITY_INTAKE_GUIDELINES = """
 Guidelines for creating opportunity intakes:
-- Extract all relevant information from the conversation
-- Create complete, comprehensive opportunity intake forms
+- CAREFULLY READ the entire conversation history to extract ALL opportunity details
+- Extract EXACT values as mentioned in the conversation - do not modify or interpret
+- Create complete, comprehensive opportunity intake forms with ALL available information
 - Use clear, concise language for descriptions
 - Maintain professional tone and formatting
-- Include all available information from the conversation
-- Provide meaningful content for all sections
+- Include ALL available information from the conversation - do not leave fields empty if information exists
+- Provide meaningful content for all sections based on conversation content
 - Use markdown formatting for better readability
 - Focus on creating actionable, complete documents
+- CRITICAL: Extract information from the conversation history, not from assumptions
+- If a field has a value mentioned in the conversation, use that exact value
+- Do not use default values if specific information is available in the conversation
 """
 
 OPPORTUNITY_INTAKE_FORMAT = """
