@@ -24,7 +24,7 @@ RUN poetry install
 COPY app/ app/
 COPY worker/ worker/
 COPY common/ common/
-
+COPY auth/ auth/
 EXPOSE 9200
 
 RUN chmod +x app/prestart.sh

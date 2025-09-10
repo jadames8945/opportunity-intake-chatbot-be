@@ -1,5 +1,6 @@
 import logging
 
+from auth.dependencies.session_dependencies import get_current_user_id
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.schemas.airtable_submission import (
@@ -26,9 +27,9 @@ async def submit_opportunity_intake(
     submission: AirtableSubmissionRequest,
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=401, detail="No session found")
+    user_id = get_current_user_id(request)
+    logger.info(f"User {user_id} loading airtable cache")
+    logger.info(f"User {user_id} submitting opportunity intake")
 
     try:
         result = await airtable_service.submit_opportunity_intake(submission)
@@ -52,9 +53,9 @@ async def load_airtable_cache(
     request: Request,
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
-    session_id = request.cookies.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=401, detail="No session found")
+    user_id = get_current_user_id(request)
+    logger.info(f"User {user_id} loading airtable cache")
+    logger.info(f"User {user_id} submitting opportunity intake")
 
     try:
         data = await airtable_service.load_all_data_from_airtable()

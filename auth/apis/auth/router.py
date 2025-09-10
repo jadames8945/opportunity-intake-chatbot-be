@@ -1,3 +1,4 @@
+from auth.dependencies.session_dependencies import get_session_service
 from auth.exceptions.user_exceptions import (
     MissingCredentialsException,
     UserException,
@@ -6,6 +7,7 @@ from auth.exceptions.user_exceptions import (
 from auth.schemas.token import Token
 from auth.schemas.user import User, UserCredentials
 from auth.services.auth_service import AuthService, logger
+from auth.services.session_service import SessionService
 from fastapi import APIRouter, Depends, HTTPException, Response
 
 auth_router = APIRouter(
@@ -28,13 +30,14 @@ async def register_user(
     response: Response,
     user: User,
     auth_service: AuthService = Depends(get_auth_service),
+    session_service: SessionService = Depends(get_session_service),
 ) -> User:
     try:
         check_credentials(user.username, user.password)
 
-        session_id = auth_service.create_session_id()
-
         user_response = await auth_service.register_user(user)
+
+        session_id = session_service.create_session(user_response.id)
 
         response.set_cookie(
             key="session_id",
@@ -61,13 +64,19 @@ async def login_user(
     response: Response,
     user_credentials: UserCredentials,
     auth_service: AuthService = Depends(get_auth_service),
+    session_service: SessionService = Depends(get_session_service),
 ) -> Token:
     try:
         check_credentials(user_credentials.username, user_credentials.password)
 
-        session_id = auth_service.create_session_id()
+        token: Token = await auth_service.login_user(user_credentials)
 
-        result = await auth_service.login_user(user_credentials)
+        user_id = token.user.get("id")
+
+        if not user_id:
+            raise HTTPException(status_code=500, detail="User ID not found")
+
+        session_id = session_service.create_session(user_id)
 
         response.set_cookie(
             key="session_id",
@@ -78,9 +87,9 @@ async def login_user(
             max_age=86400,
         )
 
-        logger.info(f"Logged in user {result.user}")
+        logger.info(f"Logged in user {token.user}")
 
-        return result
+        return token
     except MissingCredentialsException as e:
         raise HTTPException(status_code=400, detail=str(e))
     except ValueError as e:

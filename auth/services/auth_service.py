@@ -15,9 +15,6 @@ class AuthService:
         self.token_service = TokenService()
         self.auth_repository = AuthRepository()
 
-    def create_session_id(self) -> str:
-        return str(uuid.uuid4())
-
     async def authenticate_user(self, username: str, password: str) -> Optional[User]:
         user = await self.auth_repository.get_user_by_username(username)
 

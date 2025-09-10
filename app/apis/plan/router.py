@@ -2,6 +2,8 @@ import json
 import logging
 from typing import Set
 
+from auth.dependencies.session_dependencies import get_session_service
+from auth.services.session_service import SessionService
 from common.services.redis_service import get_redis_client
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from redis.asyncio import Redis
@@ -23,12 +25,16 @@ def get_unified_service() -> UnifiedService:
 
 @router.websocket("/ws")
 async def websocket_endpoint(
-    websocket: WebSocket, redis: Redis = Depends(get_redis_client)
+    websocket: WebSocket,
+    session_service: SessionService = Depends(get_session_service),
+    redis: Redis = Depends(get_redis_client),
 ) -> None:
     session_id = websocket.cookies.get("session_id")
 
-    if not session_id:
-        await websocket.close(code=1008, reason="No session")
+    user_id = session_service.validate_session(session_id)
+
+    if not user_id:
+        await websocket.close(code=1008, reason="Invalid session")
         return
 
     await websocket.accept()
