@@ -1,9 +1,21 @@
 import logging
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from auth.dependencies.auth_dependencies import get_current_user
+from auth.schemas.user import User
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+)
 
 from app.services.upload_service import UploadService
+from app.util.session_utils import get_user_id_and_handle_rotation
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +31,17 @@ def get_upload_service() -> UploadService:
 
 @router.post("/document")
 async def upload_document(
+    request: Request,
+    response: Response,
     file: UploadFile = File(...),
     user_context: str = Form("Create a PRD based on this document"),
+    current_user: User = Depends(get_current_user),
     upload_service: UploadService = Depends(get_upload_service),
 ) -> Dict[str, Any]:
+    user_id = get_user_id_and_handle_rotation(request, response)
+
     try:
-        logger.info(f"Processing uploaded document: {file.filename}")
+        logger.info(f"Processing uploaded document: {file.filename} for user {user_id}")
 
         content = await file.read()
 

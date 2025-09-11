@@ -31,7 +31,7 @@ async def websocket_endpoint(
 ) -> None:
     session_id = websocket.cookies.get("session_id")
 
-    user_id = session_service.validate_session(session_id)
+    user_id, new_session_id = session_service.validate_session(session_id)
 
     if not user_id:
         await websocket.close(code=1008, reason="Invalid session")
@@ -39,6 +39,12 @@ async def websocket_endpoint(
 
     await websocket.accept()
     redis_tasks: Set = set()
+
+    if new_session_id:
+        await websocket.send_json(
+            {"type": "session_rotated", "new_session_id": new_session_id}
+        )
+        session_id = new_session_id
 
     await websocket.send_json({"type": "session_established", "session_id": user_id})
 
@@ -50,6 +56,13 @@ async def websocket_endpoint(
             if data.get("type") == "ack":
                 await handle_ack(data=data, redis=redis)
                 continue
+
+            user_id, new_session_id = session_service.validate_session(session_id)
+            if new_session_id:
+                await websocket.send_json(
+                    {"type": "session_rotated", "new_session_id": new_session_id}
+                )
+                session_id = new_session_id
 
             await handle_invoke(
                 websocket=websocket,

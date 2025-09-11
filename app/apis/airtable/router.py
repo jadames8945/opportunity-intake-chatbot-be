@@ -1,13 +1,15 @@
 import logging
 
-from auth.dependencies.session_dependencies import get_current_user_id
-from fastapi import APIRouter, Depends, HTTPException, Request
+from auth.dependencies.auth_dependencies import get_current_user
+from auth.schemas.user import User
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 from app.schemas.airtable_submission import (
     AirtableSubmissionRequest,
     AirtableSubmissionResponse,
 )
 from app.services.airtable_service import AirtableService
+from app.util.session_utils import get_user_id_and_handle_rotation
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +26,13 @@ def get_airtable_service():
 @router.post("/submit", response_model=AirtableSubmissionResponse)
 async def submit_opportunity_intake(
     request: Request,
+    response: Response,
     submission: AirtableSubmissionRequest,
+    current_user: User = Depends(get_current_user),
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
-    user_id = get_current_user_id(request)
-    logger.info(f"User {user_id} loading airtable cache")
+    user_id = get_user_id_and_handle_rotation(request, response)
+
     logger.info(f"User {user_id} submitting opportunity intake")
 
     try:
@@ -51,11 +55,13 @@ async def submit_opportunity_intake(
 @router.post("/load-cache")
 async def load_airtable_cache(
     request: Request,
+    response: Response,
+    current_user: User = Depends(get_current_user),
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
-    user_id = get_current_user_id(request)
+    user_id = get_user_id_and_handle_rotation(request, response)
+
     logger.info(f"User {user_id} loading airtable cache")
-    logger.info(f"User {user_id} submitting opportunity intake")
 
     try:
         data = await airtable_service.load_all_data_from_airtable()
