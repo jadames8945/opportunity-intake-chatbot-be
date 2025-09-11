@@ -37,7 +37,7 @@ services:
     volumes:
       - ./.docker/.ipython:/root/.ipython:cached
     ports:
-      - 9210:9210
+      - ${AUTH_PORT}:${AUTH_PORT}
     env_file:
       - .env
     environment:
