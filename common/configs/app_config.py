@@ -20,5 +20,8 @@ class AppConfig:
             "https://fde-intake-chatbot.coolify.dd-dpe.com",
         ]
 
+    def cookie_secure(self) -> bool:
+        return self.ENV.upper() != "DEV"
+
 
 config = AppConfig()

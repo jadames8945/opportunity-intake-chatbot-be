@@ -1,5 +1,7 @@
 from typing import Dict
 
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+
 from auth.dependencies.session_dependencies import get_session_service
 from auth.exceptions.user_exceptions import (
     MissingCredentialsException,
@@ -10,7 +12,6 @@ from auth.schemas.token import Token
 from auth.schemas.user import User, UserCredentials
 from auth.services.auth_service import AuthService, logger
 from auth.services.session_service import SessionService
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -41,14 +42,7 @@ async def register_user(
 
         session_id = session_service.create_session(user_response.id)
 
-        response.set_cookie(
-            key="session_id",
-            value=session_id,
-            httponly=True,
-            secure=False,
-            samesite="lax",
-            max_age=86400,
-        )
+        session_service.set_session_cookie(response=response, session_id=session_id)
 
         return user_response
     except MissingCredentialsException as e:
@@ -80,14 +74,7 @@ async def login_user(
 
         session_id = session_service.create_session(user_id)
 
-        response.set_cookie(
-            key="session_id",
-            value=session_id,
-            httponly=True,
-            secure=False,
-            samesite="lax",
-            max_age=86400,
-        )
+        session_service.set_session_cookie(response=response, session_id=session_id)
 
         logger.info(f"Logged in user {token.user}")
 
@@ -114,8 +101,6 @@ async def logout_user(
     if session_id:
         session_service.invalidate_session(session_id)
 
-    response.delete_cookie(
-        key="session_id", httponly=True, secure=False, samesite="lax"
-    )
+    session_service.delete_session_cookie(response=response)
 
     return {"message": "Logged out successfully"}

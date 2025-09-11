@@ -3,6 +3,9 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
+from fastapi import Response
+
+from common.configs.app_config import config
 from common.services.redis_service import get_sync_redis_client
 
 logger = logging.getLogger(__name__)
@@ -126,3 +129,23 @@ class SessionService:
 
         logger.info(f"Cleaned up {cleaned} expired sessions")
         return cleaned
+
+    def set_session_cookie(self, response: Response, session_id: str) -> None:
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            httponly=True,
+            secure=config.cookie_secure(),
+            samesite="lax",
+            domain=".coolify.dd-dpe.com",
+            max_age=86400,
+        )
+
+    def delete_session_cookie(self, response: Response) -> None:
+        response.delete_cookie(
+            key="session_id",
+            httponly=True,
+            secure=config.cookie_secure(),
+            samesite="lax",
+            domain=".coolify.dd-dpe.com",
+        )
