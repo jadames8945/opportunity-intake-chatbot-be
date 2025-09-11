@@ -6,7 +6,7 @@ class AppConfig:
     def __init__(self) -> None:
         self.ENV = cast(str, os.getenv("ENV", "DEV"))
         self.PORT = int(os.getenv("PORT", "9200"))
-        self.AUTH_PORT = int(os.getenv("AUTH_PORT", "9201"))
+        self.AUTH_PORT = int(os.getenv("AUTH_PORT", "9210"))
 
     def allowed_origins(self) -> List[str]:
         env_origins = os.getenv("ALLOWED_ORIGINS")
