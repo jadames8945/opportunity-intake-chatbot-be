@@ -26,7 +26,7 @@ COPY app/ app/
 COPY common/ common/
 COPY worker/ worker/
 
-EXPOSE 9201
+EXPOSE ${AUTH_PORT:-9201}
 
 RUN chmod +x auth/prestart.sh
 
