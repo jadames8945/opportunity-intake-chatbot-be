@@ -35,9 +35,12 @@ class TokenService:
     def verify_token(self, token: str) -> Optional[str]:
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+
             username: str = payload.get("username")
+
             if username is None:
                 return None
+
             return username
         except jwt.PyJWTError:
             return None
