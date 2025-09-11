@@ -9,7 +9,6 @@ from app.schemas.airtable_submission import (
     AirtableSubmissionResponse,
 )
 from app.services.airtable_service import AirtableService
-from app.util.session_utils import get_user_id_and_handle_rotation
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +30,7 @@ async def submit_opportunity_intake(
     current_user: User = Depends(get_current_user),
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
-    user_id = get_user_id_and_handle_rotation(request, response)
-
-    logger.info(f"User {user_id} submitting opportunity intake")
+    logger.info(f"User {current_user.username} submitting opportunity intake")
 
     try:
         result = await airtable_service.submit_opportunity_intake(submission)
@@ -59,9 +56,7 @@ async def load_airtable_cache(
     current_user: User = Depends(get_current_user),
     airtable_service: AirtableService = Depends(get_airtable_service),
 ):
-    user_id = get_user_id_and_handle_rotation(request, response)
-
-    logger.info(f"User {user_id} loading airtable cache")
+    logger.info(f"User {current_user.username} loading airtable cache")
 
     try:
         data = await airtable_service.load_all_data_from_airtable()

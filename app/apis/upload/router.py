@@ -15,7 +15,6 @@ from fastapi import (
 )
 
 from app.services.upload_service import UploadService
-from app.util.session_utils import get_user_id_and_handle_rotation
 
 logger = logging.getLogger(__name__)
 
@@ -38,27 +37,25 @@ async def upload_document(
     current_user: User = Depends(get_current_user),
     upload_service: UploadService = Depends(get_upload_service),
 ) -> Dict[str, Any]:
-    user_id = get_user_id_and_handle_rotation(request, response)
+    logger.info(f"User {current_user.username} uploading document: {file.filename}")
 
     try:
-        logger.info(f"Processing uploaded document: {file.filename} for user {user_id}")
-
-        content = await file.read()
-
+        file_content = await file.read()
         result = upload_service.process_document_upload(
-            file_content=content, filename=file.filename, user_context=user_context
+            file_content=file_content,
+            filename=file.filename,
+            user_context=user_context,
         )
 
-        if result:
-            return result
-        else:
-            raise HTTPException(
-                status_code=500, detail="Failed to generate PRD from document"
-            )
+        return {
+            "success": True,
+            "message": "Document processed successfully",
+            "result": result,
+        }
 
     except ValueError as e:
-        logger.warning(f"Document upload validation failed: {e}")
+        logger.warning(f"Validation error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.exception("Document upload processing failed")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error processing document: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
