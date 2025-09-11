@@ -15,6 +15,9 @@ class ChatHistoryService:
         self.agent = ChatHistoryAgent()
         self.repository = ChatHistoryRepository()
 
+    async def get_all_chat_histories(self, username: str) -> List[Dict[str, Any]]:
+        return await self.repository.get_all_chat_histories(username=username)
+
     def get_chat_history(self, session_id: str) -> List[Dict[str, str]]:
         logger.info(f"Getting chat history for session: {session_id}")
 
@@ -63,9 +66,6 @@ class ChatHistoryService:
         conversation_store.set_messages(messages=messages)
 
         return messages
-
-    async def get_all_chat_histories(self, username: str) -> List[Dict[str, Any]]:
-        return await self.repository.get_all_chat_histories(username=username)
 
     async def delete_chat_history(
         self, request: ChatHistoryRequest, user_id: str = None

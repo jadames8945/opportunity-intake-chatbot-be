@@ -26,9 +26,8 @@ def get_chat_history_service() -> ChatHistoryService:
 
 
 @router.get("")
-async def load_chat_history_on_login(
+async def get_all_chat_histories(
     current_user: User = Depends(get_current_user),
-    username: str = None,
     chat_history_service: ChatHistoryService = Depends(get_chat_history_service),
 ) -> List[Dict[str, Any]]:
     return await chat_history_service.get_all_chat_histories(
@@ -91,7 +90,6 @@ async def save_chat_history(
     user_id = get_user_id_and_handle_rotation(request, response)
 
     username = chat_history_request.username
-
     messages = (
         chat_history_request.messages
         if hasattr(chat_history_request, "messages")
