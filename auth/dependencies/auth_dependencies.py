@@ -1,9 +1,14 @@
-from auth.schemas.user import User
-from auth.services.auth_service import AuthService
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from auth.schemas.user import User
+from auth.services.auth_service import AuthService
+
 security = HTTPBearer()
+
+
+def get_auth_service():
+    return AuthService()
 
 
 async def get_current_user(
